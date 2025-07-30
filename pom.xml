@@ -11,4 +11,18 @@
         <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>ufjf_dcc025.franquiasystem.FranquiaSystem</exec.mainClass>
     </properties>
+    
+    <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>5.12.0</version>
+    </dependency>
+  </dependencies>
 </project>

@@ -1,16 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package ufjf_dcc025.franquiasystem;
+import ufjf_dcc025.franquiasystem.models.Franquia;
+import ufjf_dcc025.franquiasystem.models.Gerente;
+import ufjf_dcc025.franquiasystem.repositories.FranquiaRepository;
+import ufjf_dcc025.franquiasystem.repositories.UsuarioRepository;
 
-/**
- *
- * @author Administrador
- */
 public class FranquiaSystem {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        FranquiaRepository repository = new FranquiaRepository();;;
+        
+        Gerente gerente = new Gerente();
+        gerente.setId(1);
+        gerente.setNome("pedro");
+        gerente.setSenha("senha123");
+        Franquia franquia = new Franquia("juiz de, fora", "endereco", gerente);
+        
+        repository.create(franquia);
+        
+        /*UsuarioRepository userRepository = new UsuarioRepository();
+        Gerente gerente = new Gerente();
+        gerente.setNome("pedro");
+        gerente.setSenha("senha123");
+        userRepository.create(gerente);*/
     }
 }
