@@ -1,6 +1,7 @@
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\exceptions\UsuarioNaoEncontradoException.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Gerente.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\controllers\UsuarioController.java
+C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\exceptions\TipoDeUsuarioInvalido.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\FranquiaSystem.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Dono.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\repositories\FranquiaRepository.java

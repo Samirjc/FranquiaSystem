@@ -6,6 +6,9 @@ public class Vendedor extends Usuario {
     public Vendedor(int id, String nome, String senha) {
         super(id, nome, senha);
     }
+    public Vendedor(String nome, String senha) {
+        super(nome, senha);
+    }
 
     @Override
     public String getTipo() {

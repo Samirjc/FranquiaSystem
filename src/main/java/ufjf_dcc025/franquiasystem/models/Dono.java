@@ -9,6 +9,10 @@ public class Dono extends Usuario {
         super(id, nome, senha);
     }
     
+    public Dono(String nome, String senha) {
+        super(nome, senha);
+    }
+    
     public void addFranquia(Franquia franquia) {
         franquias.add(franquia);
     }

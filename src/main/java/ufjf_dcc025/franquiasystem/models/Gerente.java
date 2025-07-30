@@ -6,6 +6,10 @@ public class Gerente extends Usuario {
         super(id, nome, senha);
     }
     
+    public Gerente(String nome, String senha) {
+        super(nome, senha);
+    }
+    
     @Override
     public String getTipo() {
         return "gerente";

@@ -2,12 +2,7 @@ package ufjf_dcc025.franquiasystem;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ufjf_dcc025.franquiasystem.controllers.UsuarioController;
-import ufjf_dcc025.franquiasystem.exceptions.UsuarioNaoEncontradoException;
-import ufjf_dcc025.franquiasystem.models.Franquia;
-import ufjf_dcc025.franquiasystem.models.Gerente;
-import ufjf_dcc025.franquiasystem.models.Usuario;
-import ufjf_dcc025.franquiasystem.repositories.FranquiaRepository;
-import ufjf_dcc025.franquiasystem.repositories.UsuarioRepository;
+import ufjf_dcc025.franquiasystem.exceptions.TipoDeUsuarioInvalido;
 
 public class FranquiaSystem {
 
@@ -15,11 +10,9 @@ public class FranquiaSystem {
         UsuarioController controller = new UsuarioController();
         
         try {
-            Usuario usuario = controller.findById(2);
-            System.err.println(usuario.getTipo());
-            
-        } catch (UsuarioNaoEncontradoException ex) {
-            System.err.println(ex.getMessage());
+            controller.create("Samir", "password321", "dono");
+        } catch (TipoDeUsuarioInvalido ex) {
+            Logger.getLogger(FranquiaSystem.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

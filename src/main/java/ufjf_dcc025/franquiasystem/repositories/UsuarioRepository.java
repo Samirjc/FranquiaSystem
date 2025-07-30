@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -92,6 +93,49 @@ public class UsuarioRepository {
         }
 
         return Optional.empty();
+    }
+
+    public List<Usuario> findAll() {
+        List<Usuario> usuarios = new ArrayList<>();
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) {
+            return usuarios;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+
+                if (linha.length >= 4) {
+                    int idAtual = Integer.parseInt(linha[0]);
+                    String nome = linha[1];
+                    String senha = linha[2];
+                    String tipo = linha[3];
+
+                    switch (tipo) {
+                        case "dono":
+                            usuarios.add(new Dono(idAtual, nome, senha));
+                            break;
+                        case "gerente":
+                            usuarios.add(new Gerente(idAtual, nome, senha));
+                            break;
+                        case "vendedor":
+                            usuarios.add(new Vendedor(idAtual, nome, senha));
+                            break;
+                        default:
+                            System.err.println("Tipo de usuário desconhecido: " + tipo);
+                            break;
+                    }
+                }
+            }
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao ler o CSV para buscar todos os usuários: " + e.getMessage());
+        }
+
+        return usuarios;
     }
 
     private int obterProximoId(File arquivo) {

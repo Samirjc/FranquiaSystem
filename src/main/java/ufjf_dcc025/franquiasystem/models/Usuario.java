@@ -11,6 +11,11 @@ public abstract class Usuario {
         this.senha = senha;
     }
     
+    public Usuario(String nome, String senha) {
+        this.nome = nome;
+        this.senha = senha;
+    }
+    
     public int getId() {
         return id;
     }

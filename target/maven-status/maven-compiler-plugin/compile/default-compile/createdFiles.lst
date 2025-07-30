@@ -1,6 +1,7 @@
 ufjf_dcc025\franquiasystem\models\Dono.class
 ufjf_dcc025\franquiasystem\repositories\FranquiaRepository.class
 ufjf_dcc025\franquiasystem\FranquiaSystem.class
+ufjf_dcc025\franquiasystem\exceptions\TipoDeUsuarioInvalido.class
 ufjf_dcc025\franquiasystem\models\Usuario.class
 ufjf_dcc025\franquiasystem\models\Vendedor.class
 ufjf_dcc025\franquiasystem\views\LoginView.class
