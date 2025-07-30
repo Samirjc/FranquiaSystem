@@ -138,6 +138,93 @@ public class UsuarioRepository {
         return usuarios;
     }
 
+    public boolean update(Usuario usuarioAtualizado) {
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) {
+            return false;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+            boolean atualizado = false;
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+
+                if (linha.length >= 4) {
+                    int id = Integer.parseInt(linha[0]);
+
+                    if (id == usuarioAtualizado.getId()) {
+                        linhas.set(i, new String[]{
+                            Integer.toString(usuarioAtualizado.getId()),
+                            usuarioAtualizado.getNome(),
+                            usuarioAtualizado.getSenha(),
+                            usuarioAtualizado.getTipo()
+                        });
+                        atualizado = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!atualizado) {
+                return false;
+            }
+
+            try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, false))) {
+                for (String[] linha : linhas) {
+                    writer.writeNext(linha);
+                }
+            }
+
+            return true;
+        } catch (IOException | CsvException e) {
+            return false;
+        }
+    }
+
+    public boolean delete(int id) {
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) {
+            return false;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+            boolean removido = false;
+            
+            List<String[]> novasLinhas = new ArrayList<>();
+            novasLinhas.add(linhas.get(0));
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+                if (linha.length >= 1 && Integer.parseInt(linha[0]) != id) {
+                    novasLinhas.add(linha);
+                } else if (linha.length >= 1 && Integer.parseInt(linha[0]) == id) {
+                    removido = true;
+                }
+            }
+
+            if (!removido) {
+                return false;
+            }
+
+            try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, false))) {
+                for (String[] linha : novasLinhas) {
+                    writer.writeNext(linha);
+                }
+            }
+
+            return true;
+
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao deletar usuário: " + e.getMessage());
+            return false;
+        }
+    }
+
     private int obterProximoId(File arquivo) {
         int ultimoId = 0;
         if (!arquivo.exists()) {

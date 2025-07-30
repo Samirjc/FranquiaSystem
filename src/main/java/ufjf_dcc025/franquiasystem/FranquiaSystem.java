@@ -9,10 +9,6 @@ public class FranquiaSystem {
     public static void main(String[] args) {
         UsuarioController controller = new UsuarioController();
         
-        try {
-            controller.create("Samir", "password321", "dono");
-        } catch (TipoDeUsuarioInvalido ex) {
-            Logger.getLogger(FranquiaSystem.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        controller.delete(1);
     }
 }

@@ -46,4 +46,24 @@ public class UsuarioController {
                 throw new TipoDeUsuarioInvalido();
         }
     }
+    
+    public void update(int id, String nome, String senha, String tipo) throws TipoDeUsuarioInvalido {
+        switch (tipo) {
+            case "dono":
+                usuarioRepository.update(new Dono(id, nome, senha));
+                break;
+            case "gerente":
+                usuarioRepository.update(new Gerente(id, nome, senha));
+                break;
+            case "vendedor":
+                usuarioRepository.update(new Vendedor(id, nome, senha));
+                break;
+            default:
+                throw new TipoDeUsuarioInvalido();
+        }
+    }
+    
+    public void delete(int id) {
+        usuarioRepository.delete(id);
+    }
 }
