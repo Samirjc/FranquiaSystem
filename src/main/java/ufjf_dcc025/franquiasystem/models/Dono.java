@@ -4,6 +4,10 @@ import java.util.List;
 
 public class Dono extends Usuario {
     List<Franquia> franquias;
+
+    public Dono(int id, String nome, String senha) {
+        super(id, nome, senha);
+    }
     
     public void addFranquia(Franquia franquia) {
         franquias.add(franquia);

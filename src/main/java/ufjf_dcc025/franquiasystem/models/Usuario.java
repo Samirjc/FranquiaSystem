@@ -5,6 +5,12 @@ public abstract class Usuario {
     protected String nome;
     protected String senha;
     
+    public Usuario(int id, String nome, String senha) {
+        this.id = id;
+        this.nome = nome;
+        this.senha = senha;
+    }
+    
     public int getId() {
         return id;
     }
