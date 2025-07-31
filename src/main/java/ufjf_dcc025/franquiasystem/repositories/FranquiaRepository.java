@@ -3,18 +3,33 @@ package ufjf_dcc025.franquiasystem.repositories;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import ufjf_dcc025.franquiasystem.models.Franquia;
+import ufjf_dcc025.franquiasystem.models.Usuario;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class FranquiaRepository {
     private static final String DIRETORIO = "data";
     private static final String CAMINHO_CSV = DIRETORIO + File.separator + "franquias.csv";
 
     public void create(Franquia franquia) {
+        Usuario gerente = null;
+        
+        if(franquia.getGerente() != null) {
+            UsuarioRepository usuarioRepository = new UsuarioRepository();
+            Optional<Usuario> usuarioOpt = usuarioRepository.findById(franquia.getGerente().getId());
+
+            if(usuarioOpt.isPresent()) {
+                gerente = usuarioOpt.get();
+            }else{
+                gerente = usuarioRepository.create(franquia.getGerente());
+            }
+        }
+        
         try {
             File pasta = new File(DIRETORIO);
             if (!pasta.exists()) {
@@ -34,7 +49,7 @@ public class FranquiaRepository {
                     Integer.toString(obterProximoId(arquivo)),
                     franquia.getNome(),
                     franquia.getEndereco(),
-                    Integer.toString(franquia.getGerente().getId())
+                    gerente != null ? Integer.toString(gerente.getId()) : ""
                 };
 
                 writer.writeNext(dados);

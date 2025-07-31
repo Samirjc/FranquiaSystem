@@ -10,6 +10,9 @@ public class Franquia {
     private Gerente gerente;
     private List<Vendedor> vendedores;
 
+    public Franquia() {
+        
+    }
     public Franquia(String nome, String endereco, Gerente gerente) {
         this.nome = nome;
         this.endereco = endereco;

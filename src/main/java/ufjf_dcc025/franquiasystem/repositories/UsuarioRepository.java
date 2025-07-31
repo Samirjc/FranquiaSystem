@@ -22,7 +22,7 @@ public class UsuarioRepository {
     private static final String DIRETORIO = "data";
     private static final String CAMINHO_CSV = DIRETORIO + File.separator + "usuarios.csv";
 
-    public void create(Usuario usuario) {
+    public Usuario create(Usuario usuario) {
         try {
             File pasta = new File(DIRETORIO);
             if (!pasta.exists()) {
@@ -31,6 +31,7 @@ public class UsuarioRepository {
 
             File arquivo = new File(CAMINHO_CSV);
             boolean escreverCabecalho = !arquivo.exists() || arquivo.length() == 0;
+            usuario.setId(obterProximoId(arquivo));
 
             try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, true))) {
                 if (escreverCabecalho) {
@@ -39,7 +40,7 @@ public class UsuarioRepository {
                 }
 
                 String[] dados = {
-                    Integer.toString(obterProximoId(arquivo)),
+                    Integer.toString(usuario.getId()),
                     usuario.getNome(),
                     usuario.getSenha(),
                     usuario.getTipo()
@@ -51,13 +52,15 @@ public class UsuarioRepository {
         } catch (IOException e) {
             System.err.println("Erro ao salvar franquia no CSV: " + e.getMessage());
         }
+        
+        return usuario;
     }
 
     public Optional<Usuario> findById(int id) {
         File arquivo = new File(CAMINHO_CSV);
 
         if (!arquivo.exists()) {
-            return null;
+            return Optional.empty();
         }
 
         try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
