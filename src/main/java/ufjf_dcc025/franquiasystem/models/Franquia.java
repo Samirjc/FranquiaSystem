@@ -7,13 +7,20 @@ public class Franquia {
     private int id;
     private String nome;
     private String endereco;
-    private Gerente gerente;
+    private Usuario gerente;
     private List<Vendedor> vendedores;
 
     public Franquia() {
         
     }
-    public Franquia(String nome, String endereco, Gerente gerente) {
+    public Franquia(String nome, String endereco, Usuario gerente) {
+        this.nome = nome;
+        this.endereco = endereco;
+        this.gerente = gerente;
+        this.vendedores = new ArrayList<>();
+    }
+    public Franquia(int id, String nome, String endereco, Usuario gerente) {
+        this.id = id;
         this.nome = nome;
         this.endereco = endereco;
         this.gerente = gerente;
@@ -39,10 +46,10 @@ public class Franquia {
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
-    public Gerente getGerente() {
+    public Usuario getGerente() {
         return gerente;
     }
-    public void setGerente(Gerente gerente) {
+    public void setGerente(Usuario gerente) {
         this.gerente = gerente;
     }
     public List<Vendedor> getVendedores() {

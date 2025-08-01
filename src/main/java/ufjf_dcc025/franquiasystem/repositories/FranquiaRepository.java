@@ -2,6 +2,7 @@ package ufjf_dcc025.franquiasystem.repositories;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
 import ufjf_dcc025.franquiasystem.models.Franquia;
 import ufjf_dcc025.franquiasystem.models.Usuario;
 
@@ -9,27 +10,32 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import ufjf_dcc025.franquiasystem.models.Dono;
+import ufjf_dcc025.franquiasystem.models.Gerente;
+import ufjf_dcc025.franquiasystem.models.Vendedor;
 
 public class FranquiaRepository {
+
     private static final String DIRETORIO = "data";
     private static final String CAMINHO_CSV = DIRETORIO + File.separator + "franquias.csv";
 
     public void create(Franquia franquia) {
         Usuario gerente = null;
-        
-        if(franquia.getGerente() != null) {
+
+        if (franquia.getGerente() != null) {
             UsuarioRepository usuarioRepository = new UsuarioRepository();
             Optional<Usuario> usuarioOpt = usuarioRepository.findById(franquia.getGerente().getId());
 
-            if(usuarioOpt.isPresent()) {
+            if (usuarioOpt.isPresent()) {
                 gerente = usuarioOpt.get();
-            }else{
+            } else {
                 gerente = usuarioRepository.create(franquia.getGerente());
             }
         }
-        
+
         try {
             File pasta = new File(DIRETORIO);
             if (!pasta.exists()) {
@@ -41,7 +47,7 @@ public class FranquiaRepository {
 
             try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, true))) {
                 if (escreverCabecalho) {
-                    String[] cabecalho = { "id", "Nome", "Endereco", "gerenteId" };
+                    String[] cabecalho = {"id", "Nome", "Endereco", "gerenteId"};
                     writer.writeNext(cabecalho);
                 }
 
@@ -59,10 +65,94 @@ public class FranquiaRepository {
             System.err.println("Erro ao salvar franquia no CSV: " + e.getMessage());
         }
     }
-    
+
+    public Optional<Franquia> findById(int id) {
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) {
+            return Optional.empty();
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+                if (linha.length >= 4) {
+
+                    int idAtual = Integer.parseInt(linha[0]);
+                    if (idAtual == id) {
+                        String nome = linha[1];
+                        String endereco = linha[2];
+                        String gerenteId = linha[3];
+
+                        if (!"".equals(gerenteId)) {
+                            Optional<Usuario> gerenteOpt = usuarioRepository.findById(Integer.parseInt(gerenteId));
+
+                            if (gerenteOpt.isPresent()) {
+                                return Optional.of(new Franquia(idAtual, nome, endereco, gerenteOpt.get()));
+                            }
+                        } else {
+                            return Optional.of(new Franquia(idAtual, nome, endereco, null));
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o CSV para buscar usuário por ID: " + e.getMessage());
+        } catch (CsvException ex) {
+            System.err.println("Erro ao ler o CSV para buscar usuário por ID: " + ex.getMessage());
+        }
+
+        return Optional.empty();
+    }
+
+    public List<Franquia> findAll() {
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        List<Franquia> franquias = new ArrayList<>();
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) {
+            return franquias;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+
+                if (linha.length >= 4) {
+                    int idAtual = Integer.parseInt(linha[0]);
+                    String nome = linha[1];
+                    String endereco = linha[2];
+                    String gerenteId = linha[3];
+
+                    if (!"".equals(gerenteId)) {
+                        Optional<Usuario> gerenteOpt = usuarioRepository.findById(Integer.parseInt(gerenteId));
+
+                        if (gerenteOpt.isPresent()) {
+                            franquias.add(new Franquia(idAtual, nome, endereco, gerenteOpt.get()));
+                        }
+                    } else {
+                        franquias.add(new Franquia(idAtual, nome, endereco, null));
+                    }
+                }
+            }
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao ler o CSV para buscar todos os usuários: " + e.getMessage());
+        }
+
+        return franquias;
+    }
+
     private int obterProximoId(File arquivo) {
         int ultimoId = 0;
-        if (!arquivo.exists()) return 1;
+        if (!arquivo.exists()) {
+            return 1;
+        }
 
         try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
             List<String[]> linhas = reader.readAll();
@@ -74,7 +164,8 @@ public class FranquiaRepository {
                         if (idAtual > ultimoId) {
                             ultimoId = idAtual;
                         }
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             }
         } catch (Exception e) {
