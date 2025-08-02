@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import ufjf_dcc025.franquiasystem.models.Dono;
-import ufjf_dcc025.franquiasystem.models.Gerente;
-import ufjf_dcc025.franquiasystem.models.Vendedor;
+
 
 public class FranquiaRepository {
 
@@ -146,6 +144,93 @@ public class FranquiaRepository {
         }
 
         return franquias;
+    }
+    
+    public boolean update(Franquia franquiaAtualizada) {
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) {
+            return false;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+            boolean atualizado = false;
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+
+                if (linha.length >= 4) {
+                    int id = Integer.parseInt(linha[0]);
+
+                    if (id == franquiaAtualizada.getId()) {
+                        linhas.set(i, new String[]{
+                            Integer.toString(franquiaAtualizada.getId()),
+                            franquiaAtualizada.getNome(),
+                            franquiaAtualizada.getEndereco(),
+                            franquiaAtualizada.getGerente() != null ? Integer.toString(franquiaAtualizada.getGerente().getId()) : linha[3]
+                        });
+                        atualizado = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!atualizado) {
+                return false;
+            }
+
+            try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, false))) {
+                for (String[] linha : linhas) {
+                    writer.writeNext(linha);
+                }
+            }
+
+            return true;
+        } catch (IOException | CsvException e) {
+            return false;
+        }
+    }
+    
+    public boolean delete(int id) {
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) {
+            return false;
+        }
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+            boolean removido = false;
+            
+            List<String[]> novasLinhas = new ArrayList<>();
+            novasLinhas.add(linhas.get(0));
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+                if (linha.length >= 1 && Integer.parseInt(linha[0]) != id) {
+                    novasLinhas.add(linha);
+                } else if (linha.length >= 1 && Integer.parseInt(linha[0]) == id) {
+                    removido = true;
+                }
+            }
+
+            if (!removido) {
+                return false;
+            }
+
+            try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, false))) {
+                for (String[] linha : novasLinhas) {
+                    writer.writeNext(linha);
+                }
+            }
+
+            return true;
+
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao deletar usuário: " + e.getMessage());
+            return false;
+        }
     }
 
     private int obterProximoId(File arquivo) {

@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ufjf_dcc025.franquiasystem.models.Dono;
 import ufjf_dcc025.franquiasystem.models.Gerente;
 import ufjf_dcc025.franquiasystem.models.Usuario;
