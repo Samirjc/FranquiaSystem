@@ -2,10 +2,12 @@ package ufjf_dcc025.franquiasystem.repositories;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import ufjf_dcc025.franquiasystem.models.Pedido;
@@ -67,6 +69,91 @@ public class PedidosRepository {
         } catch (IOException e) {
             System.err.println("Erro ao salvar pedido no CSV: " + e.getMessage());
         }
+    }
+    
+    public Optional<Pedido> findById(int id) {
+        ProdutoRepository produtoRepository = new ProdutoRepository();
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) return Optional.empty();
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+                if (linha.length >= 6 && Integer.parseInt(linha[0]) == id) {
+                    String nome = linha[1];
+                    String formaPagamento = linha[2];
+                    double taxas = Double.parseDouble(linha[3]);
+                    double descontos = Double.parseDouble(linha[4]);
+                    String modalidadeEntrega = linha[5];
+
+                    List<Produto> produtos = buscarProdutosDoPedido(id, produtoRepository);
+                    return Optional.of(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega));
+                }
+            }
+
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao buscar pedido por ID: " + e.getMessage());
+        }
+
+        return Optional.empty();
+    }
+    
+    private List<Produto> buscarProdutosDoPedido(int pedidoId, ProdutoRepository produtoRepository) throws IOException, CsvException {
+        List<Produto> produtos = new ArrayList<>();
+        File arquivoRelacionamento = new File(CAMINHO_CSV_RELACIONAMENTO);
+        if (!arquivoRelacionamento.exists()) return produtos;
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivoRelacionamento))) {
+            List<String[]> linhas = reader.readAll();
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+                if (Integer.parseInt(linha[1]) == pedidoId) {
+                    int produtoId = Integer.parseInt(linha[2]);
+                    
+                    Optional<Produto> produtoOpt = produtoRepository.findById(produtoId);
+                    if(produtoOpt.isPresent()) {
+                        produtos.add(produtoOpt.get());
+                    }
+                }
+            }
+        }
+        
+        return produtos;
+    }
+    
+    public List<Pedido> findAll() {
+        ProdutoRepository produtoRepository = new ProdutoRepository();
+        List<Pedido> pedidos = new ArrayList<>();
+        File arquivo = new File(CAMINHO_CSV);
+
+        if (!arquivo.exists()) return pedidos;
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
+            List<String[]> linhas = reader.readAll();
+
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+                if (linha.length >= 6) {
+                    int id = Integer.parseInt(linha[0]);
+                    String nome = linha[1];
+                    String formaPagamento = linha[2];
+                    double taxas = Double.parseDouble(linha[3]);
+                    double descontos = Double.parseDouble(linha[4]);
+                    String modalidadeEntrega = linha[5];
+
+                    List<Produto> produtos = buscarProdutosDoPedido(id, produtoRepository);
+                    pedidos.add(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega));
+                }
+            }
+
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao buscar todos os pedidos: " + e.getMessage());
+        }
+
+        return pedidos;
     }
     
     private int obterProximoId(File arquivo) {

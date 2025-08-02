@@ -6,7 +6,7 @@ public class Pedido {
     private int id;
     private String nomeCliente;
     private String formaPagamento;
-    List<Produto> produtos;
+    private List<Produto> produtos;
     private double taxas;
     private double descontos;
     private String modalidadeEntrega;
