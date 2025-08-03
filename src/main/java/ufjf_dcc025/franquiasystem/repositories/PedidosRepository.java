@@ -8,11 +8,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import ufjf_dcc025.franquiasystem.models.Pedido;
 import ufjf_dcc025.franquiasystem.models.Produto;
-import ufjf_dcc025.franquiasystem.models.Usuario;
 
 public class PedidosRepository {
     private static final String DIRETORIO = "data";
@@ -52,15 +53,15 @@ public class PedidosRepository {
             
             try (CSVWriter writer = new CSVWriter(new FileWriter(arquivoRelacionamento, true))) {
                 if (escreverCabecalhoRelacionamento) {
-                    String[] cabecalho = {"id", "PedidoId", "ProdutoId"};
+                    String[] cabecalho = {"PedidoId", "ProdutoId", "quantidade"};
                     writer.writeNext(cabecalho);
                 }
                 
-                for(Produto produto : pedido.getProdutos()) {
+                for(Map.Entry<Produto, Integer> entry : pedido.getProdutos().entrySet()) {
                     String[] dados = {
-                        Integer.toString(obterProximoId(arquivoRelacionamento)),
                         Integer.toString(pedidoId),
-                        Integer.toString(produto.getId())
+                        Integer.toString(entry.getKey().getId()),
+                        Integer.toString(entry.getValue())
                     };
                     writer.writeNext(dados);
                 }
@@ -89,7 +90,7 @@ public class PedidosRepository {
                     double descontos = Double.parseDouble(linha[4]);
                     String modalidadeEntrega = linha[5];
 
-                    List<Produto> produtos = buscarProdutosDoPedido(id, produtoRepository);
+                    Map<Produto, Integer> produtos = buscarProdutosDoPedido(id, produtoRepository);
                     return Optional.of(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega));
                 }
             }
@@ -99,29 +100,6 @@ public class PedidosRepository {
         }
 
         return Optional.empty();
-    }
-    
-    private List<Produto> buscarProdutosDoPedido(int pedidoId, ProdutoRepository produtoRepository) throws IOException, CsvException {
-        List<Produto> produtos = new ArrayList<>();
-        File arquivoRelacionamento = new File(CAMINHO_CSV_RELACIONAMENTO);
-        if (!arquivoRelacionamento.exists()) return produtos;
-
-        try (CSVReader reader = new CSVReader(new FileReader(arquivoRelacionamento))) {
-            List<String[]> linhas = reader.readAll();
-            for (int i = 1; i < linhas.size(); i++) {
-                String[] linha = linhas.get(i);
-                if (Integer.parseInt(linha[1]) == pedidoId) {
-                    int produtoId = Integer.parseInt(linha[2]);
-                    
-                    Optional<Produto> produtoOpt = produtoRepository.findById(produtoId);
-                    if(produtoOpt.isPresent()) {
-                        produtos.add(produtoOpt.get());
-                    }
-                }
-            }
-        }
-        
-        return produtos;
     }
     
     public List<Pedido> findAll() {
@@ -144,7 +122,7 @@ public class PedidosRepository {
                     double descontos = Double.parseDouble(linha[4]);
                     String modalidadeEntrega = linha[5];
 
-                    List<Produto> produtos = buscarProdutosDoPedido(id, produtoRepository);
+                    Map<Produto, Integer> produtos = buscarProdutosDoPedido(id, produtoRepository);
                     pedidos.add(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega));
                 }
             }
@@ -156,6 +134,60 @@ public class PedidosRepository {
         return pedidos;
     }
     
+    public void delete(int pedidoId) {
+        File arquivo = new File(CAMINHO_CSV);
+        File arquivoRelacionamento = new File(CAMINHO_CSV_RELACIONAMENTO);
+
+        if (!arquivo.exists()) return;
+
+        try {
+            List<String[]> linhas = new CSVReader(new FileReader(arquivo)).readAll();
+            try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo))) {
+                for (String[] linha : linhas) {
+                    if (linha[0].equals("id") || Integer.parseInt(linha[0]) != pedidoId) {
+                        writer.writeNext(linha);
+                    }
+                }
+            }
+            
+            if (arquivoRelacionamento.exists()) {
+                List<String[]> linhasRelacionamento = new CSVReader(new FileReader(arquivoRelacionamento)).readAll();
+                try (CSVWriter writerRelacionamento = new CSVWriter(new FileWriter(arquivoRelacionamento))) {
+                    for (String[] linha : linhasRelacionamento) {
+                        if (linha[0].equals("PedidoId") || Integer.parseInt(linha[0]) != pedidoId) {
+                            writerRelacionamento.writeNext(linha);
+                        }
+                    }
+                }
+            }
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao deletar pedido: " + e.getMessage());
+        }
+    }
+    
+    private Map<Produto, Integer> buscarProdutosDoPedido(int pedidoId, ProdutoRepository produtoRepository) throws IOException, CsvException {
+        Map<Produto, Integer> produtos = new HashMap<>();
+        File arquivoRelacionamento = new File(CAMINHO_CSV_RELACIONAMENTO);
+        if (!arquivoRelacionamento.exists()) return produtos;
+
+        try (CSVReader reader = new CSVReader(new FileReader(arquivoRelacionamento))) {
+            List<String[]> linhas = reader.readAll();
+            for (int i = 1; i < linhas.size(); i++) {
+                String[] linha = linhas.get(i);
+                if (Integer.parseInt(linha[0]) == pedidoId) {
+                    int produtoId = Integer.parseInt(linha[1]);
+                    
+                    Optional<Produto> produtoOpt = produtoRepository.findById(produtoId);
+                    if(produtoOpt.isPresent()) {
+                        produtos.put(produtoOpt.get(), Integer.valueOf(linha[2]));
+                    }
+                }
+            }
+        }
+        
+        return produtos;
+    }
+    
     private int obterProximoId(File arquivo) {
         int ultimoId = 0;
         if (!arquivo.exists()) {
@@ -164,7 +196,7 @@ public class PedidosRepository {
 
         try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
             List<String[]> linhas = reader.readAll();
-            for (int i = 1; i < linhas.size(); i++) { // pula o cabeçalho
+            for (int i = 1; i < linhas.size(); i++) {
                 String[] linha = linhas.get(i);
                 if (linha.length > 0) {
                     try {

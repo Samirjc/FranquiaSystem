@@ -1,17 +1,17 @@
 package ufjf_dcc025.franquiasystem.models;
 
-import java.util.List;
+import java.util.Map;
 
 public class Pedido {
     private int id;
     private String nomeCliente;
     private String formaPagamento;
-    private List<Produto> produtos;
+    private Map<Produto, Integer> produtos;
     private double taxas;
     private double descontos;
     private String modalidadeEntrega;
 
-    public Pedido(int id, String nomeCliente, String formaPagamento, List<Produto> produtos, double taxas, double descontos, String modalidadeEntrega) {
+    public Pedido(int id, String nomeCliente, String formaPagamento, Map<Produto, Integer> produtos, double taxas, double descontos, String modalidadeEntrega) {
         this.id = id;
         this.nomeCliente = nomeCliente;
         this.formaPagamento = formaPagamento;
@@ -21,7 +21,7 @@ public class Pedido {
         this.modalidadeEntrega = modalidadeEntrega;
     }
 
-    public Pedido(String nomeCliente, String formaPagamento, List<Produto> produtos, double taxas, double descontos, String modalidadeEntrega) {
+    public Pedido(String nomeCliente, String formaPagamento, Map<Produto, Integer> produtos, double taxas, double descontos, String modalidadeEntrega) {
         this.nomeCliente = nomeCliente;
         this.formaPagamento = formaPagamento;
         this.produtos = produtos;
@@ -54,11 +54,11 @@ public class Pedido {
         this.formaPagamento = formaPagamento;
     }
 
-    public List<Produto> getProdutos() {
+    public Map<Produto, Integer> getProdutos() {
         return produtos;
     }
 
-    public void setProdutos(List<Produto> produtos) {
+    public void setProdutos(Map<Produto, Integer> produtos) {
         this.produtos = produtos;
     }
 
