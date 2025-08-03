@@ -17,6 +17,18 @@ public class UsuarioController {
         this.usuarioRepository = new UsuarioRepository();
     }
     
+    public Optional<Usuario> autenticar(String nome, String senha) {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        
+        for(Usuario usuario : usuarios) {
+            if(usuario.getNome().equals(nome) && usuario.getSenha().equals(senha)) {
+                return Optional.of(usuario);
+            }
+        }
+        
+        return Optional.empty();
+    }
+    
     public Usuario findById(int id) throws UsuarioNaoEncontradoException {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         

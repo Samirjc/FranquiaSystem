@@ -5,11 +5,14 @@ C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\u
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Dono.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\repositories\FranquiaRepository.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\repositories\UsuarioRepository.java
+C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\views\VendedorView.java
+C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\views\DonoView.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Pedido.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\exceptions\UsuarioNaoEncontradoException.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Gerente.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Produto.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Franquia.java
+C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\views\GerenteView.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\repositories\ProdutoRepository.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\models\Usuario.java
 C:\Users\Administrador\Documents\NetBeansProjects\FranquiaSystem\src\main\java\ufjf_dcc025\franquiasystem\views\LoginView.java
