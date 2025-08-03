@@ -6,6 +6,7 @@ ufjf_dcc025\franquiasystem\controllers\UsuarioController.class
 ufjf_dcc025\franquiasystem\models\Franquia.class
 ufjf_dcc025\franquiasystem\models\Pedido.class
 ufjf_dcc025\franquiasystem\models\Produto.class
+ufjf_dcc025\franquiasystem\controllers\FranquiaController.class
 ufjf_dcc025\franquiasystem\repositories\FranquiaRepository.class
 ufjf_dcc025\franquiasystem\FranquiaSystem.class
 ufjf_dcc025\franquiasystem\exceptions\TipoDeUsuarioInvalido.class
@@ -17,3 +18,4 @@ ufjf_dcc025\franquiasystem\models\Gerente.class
 ufjf_dcc025\franquiasystem\repositories\ProdutoRepository.class
 ufjf_dcc025\franquiasystem\repositories\PedidosRepository.class
 ufjf_dcc025\franquiasystem\repositories\UsuarioRepository.class
+ufjf_dcc025\franquiasystem\views\DonoView$1.class

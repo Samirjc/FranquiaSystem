@@ -1,6 +1,7 @@
 package ufjf_dcc025.franquiasystem.controllers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Optional;
 import ufjf_dcc025.franquiasystem.exceptions.TipoDeUsuarioInvalido;
 import ufjf_dcc025.franquiasystem.exceptions.UsuarioNaoEncontradoException;
@@ -41,6 +42,10 @@ public class UsuarioController {
     
     public List<Usuario> findAll() {
         return usuarioRepository.findAll();
+    }
+    
+    public List<Usuario> findAllGerentes() {
+        return usuarioRepository.findAll().stream().filter(u -> "gerente".equals(u.getTipo())).collect(Collectors.toList());
     }
     
     public void create(String nome, String senha, String tipo) throws TipoDeUsuarioInvalido {
