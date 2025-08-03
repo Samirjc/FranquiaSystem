@@ -49,10 +49,6 @@ public class DonoView extends JFrame {
         titulo.setFont(new Font("SansSerif", Font.BOLD, 28));
         painelTopo.add(titulo, BorderLayout.CENTER);
 
-        JButton btnNovaFranquia = new JButton("Nova Franquia");
-        btnNovaFranquia.addActionListener(e -> novaFranquiaDialog());
-        painelTopo.add(btnNovaFranquia, BorderLayout.EAST);
-
         add(painelTopo, BorderLayout.NORTH);
 
         // PAINEL CENTRAL
@@ -81,6 +77,12 @@ public class DonoView extends JFrame {
         franquias = franquiaController.findAll();
 
         JPanel painel = new JPanel(new BorderLayout());
+        
+        JButton btnNovaFranquia = new JButton("Nova Franquia");
+        btnNovaFranquia.addActionListener(e -> novaFranquiaDialog());
+        JPanel painelTopo = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        painelTopo.add(btnNovaFranquia);
+        painel.add(painelTopo, BorderLayout.NORTH);
 
         String[] colunas = {"ID", "Nome", "Endereço", "Gerente"};
         modeloTabelaFranquias = new DefaultTableModel(colunas, 0) {
