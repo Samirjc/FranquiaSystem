@@ -134,6 +134,59 @@ public class PedidosRepository {
         return pedidos;
     }
     
+    public void update(Pedido pedidoAtualizado) {
+        File arquivo = new File(CAMINHO_CSV);
+        File arquivoRelacionamento = new File(CAMINHO_CSV_RELACIONAMENTO);
+
+        if (!arquivo.exists()) return;
+
+        try {
+            List<String[]> linhas = new CSVReader(new FileReader(arquivo)).readAll();
+            try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo))) {
+                for (String[] linha : linhas) {
+                    if (linha[0].equals("id")) {
+                        writer.writeNext(linha);
+                    } else if (Integer.parseInt(linha[0]) == pedidoAtualizado.getId()) {
+                        String[] novaLinha = {
+                            Integer.toString(pedidoAtualizado.getId()),
+                            pedidoAtualizado.getNomeCliente(),
+                            pedidoAtualizado.getFormaPagamento(),
+                            Double.toString(pedidoAtualizado.getTaxas()),
+                            Double.toString(pedidoAtualizado.getDescontos()),
+                            pedidoAtualizado.getModalidadeEntrega()
+                        };
+                        writer.writeNext(novaLinha);
+                    } else {
+                        writer.writeNext(linha);
+                    }
+                }
+            }
+
+            if (arquivoRelacionamento.exists()) {
+                List<String[]> linhasRelacionamento = new CSVReader(new FileReader(arquivoRelacionamento)).readAll();
+                try (CSVWriter writerRelacionamento = new CSVWriter(new FileWriter(arquivoRelacionamento))) {
+                    for (String[] linha : linhasRelacionamento) {
+                        if (linha[0].equals("PedidoId") || Integer.parseInt(linha[0]) != pedidoAtualizado.getId()) {
+                            writerRelacionamento.writeNext(linha);
+                        }
+                    }
+
+                    for (Map.Entry<Produto, Integer> entry : pedidoAtualizado.getProdutos().entrySet()) {
+                        String[] novaRelacao = {
+                            Integer.toString(pedidoAtualizado.getId()),
+                            Integer.toString(entry.getKey().getId()),
+                            Integer.toString(entry.getValue())
+                        };
+                        writerRelacionamento.writeNext(novaRelacao);
+                    }
+                }
+            }
+
+        } catch (IOException | CsvException e) {
+            System.err.println("Erro ao atualizar o pedido: " + e.getMessage());
+        }
+    }
+    
     public void delete(int pedidoId) {
         File arquivo = new File(CAMINHO_CSV);
         File arquivoRelacionamento = new File(CAMINHO_CSV_RELACIONAMENTO);
