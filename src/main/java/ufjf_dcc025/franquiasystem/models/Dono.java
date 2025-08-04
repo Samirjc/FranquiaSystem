@@ -1,20 +1,13 @@
 package ufjf_dcc025.franquiasystem.models;
 
-import java.util.List;
-
 public class Dono extends Usuario {
-    List<Franquia> franquias;
 
-    public Dono(int id, String nome, String senha) {
-        super(id, nome, senha);
+    public Dono(int id, String nome, String senha, String cpf, String email) {
+        super(id, nome, senha, cpf, email);
     }
     
-    public Dono(String nome, String senha) {
-        super(nome, senha);
-    }
-    
-    public void addFranquia(Franquia franquia) {
-        franquias.add(franquia);
+    public Dono(String nome, String senha, String cpf, String email) {
+        super(nome, senha, cpf, email);
     }
 
     @Override

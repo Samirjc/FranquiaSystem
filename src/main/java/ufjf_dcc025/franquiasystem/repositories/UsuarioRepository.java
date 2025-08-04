@@ -33,7 +33,7 @@ public class UsuarioRepository {
 
             try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, true))) {
                 if (escreverCabecalho) {
-                    String[] cabecalho = {"id", "Nome", "senha", "tipo"};
+                    String[] cabecalho = {"id", "Nome", "senha", "tipo", "cpf", "email"};
                     writer.writeNext(cabecalho);
                 }
 
@@ -41,7 +41,9 @@ public class UsuarioRepository {
                     Integer.toString(usuario.getId()),
                     usuario.getNome(),
                     usuario.getSenha(),
-                    usuario.getTipo()
+                    usuario.getTipo(),
+                    usuario.getCpf(),
+                    usuario.getEmail()
                 };
 
                 writer.writeNext(dados);
@@ -66,21 +68,23 @@ public class UsuarioRepository {
 
             for (int i = 1; i < linhas.size(); i++) {
                 String[] linha = linhas.get(i);
-                if (linha.length >= 4) {
+                if (linha.length >= 6) {
 
                     int idAtual = Integer.parseInt(linha[0]);
                     if (idAtual == id) {
                         String nome = linha[1];
                         String senha = linha[2];
                         String tipo = linha[3];
+                        String cpf = linha[4];
+                        String email = linha[5];
 
                         switch (tipo) {
                             case "dono":
-                                return Optional.of(new Dono(idAtual, nome, senha));
+                                return Optional.of(new Dono(idAtual, nome, senha, cpf, email));
                             case "gerente":
-                                return Optional.of(new Gerente(idAtual, nome, senha));
+                                return Optional.of(new Gerente(idAtual, nome, senha, cpf, email));
                             case "vendedor":
-                                return Optional.of(new Vendedor(idAtual, nome, senha));
+                                return Optional.of(new Vendedor(idAtual, nome, senha, cpf, email));
                             default:
                                 throw new AssertionError();
                         }
@@ -110,21 +114,23 @@ public class UsuarioRepository {
             for (int i = 1; i < linhas.size(); i++) {
                 String[] linha = linhas.get(i);
 
-                if (linha.length >= 4) {
+                if (linha.length >= 6) {
                     int idAtual = Integer.parseInt(linha[0]);
                     String nome = linha[1];
                     String senha = linha[2];
                     String tipo = linha[3];
+                    String cpf = linha[4];
+                    String email = linha[5];
 
                     switch (tipo) {
                         case "dono":
-                            usuarios.add(new Dono(idAtual, nome, senha));
+                            usuarios.add(new Dono(idAtual, nome, senha, cpf, email));
                             break;
                         case "gerente":
-                            usuarios.add(new Gerente(idAtual, nome, senha));
+                            usuarios.add(new Gerente(idAtual, nome, senha, cpf, email));
                             break;
                         case "vendedor":
-                            usuarios.add(new Vendedor(idAtual, nome, senha));
+                            usuarios.add(new Vendedor(idAtual, nome, senha, cpf, email));
                             break;
                         default:
                             System.err.println("Tipo de usuário desconhecido: " + tipo);
@@ -153,7 +159,7 @@ public class UsuarioRepository {
             for (int i = 1; i < linhas.size(); i++) {
                 String[] linha = linhas.get(i);
 
-                if (linha.length >= 4) {
+                if (linha.length >= 6) {
                     int id = Integer.parseInt(linha[0]);
 
                     if (id == usuarioAtualizado.getId()) {
@@ -161,7 +167,9 @@ public class UsuarioRepository {
                             Integer.toString(usuarioAtualizado.getId()),
                             usuarioAtualizado.getNome(),
                             usuarioAtualizado.getSenha(),
-                            usuarioAtualizado.getTipo()
+                            usuarioAtualizado.getTipo(),
+                            usuarioAtualizado.getCpf(),
+                            usuarioAtualizado.getEmail()
                         });
                         atualizado = true;
                         break;

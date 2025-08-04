@@ -3,12 +3,8 @@ package ufjf_dcc025.franquiasystem.controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Optional;
-import ufjf_dcc025.franquiasystem.exceptions.TipoDeUsuarioInvalido;
 import ufjf_dcc025.franquiasystem.exceptions.UsuarioNaoEncontradoException;
-import ufjf_dcc025.franquiasystem.models.Dono;
-import ufjf_dcc025.franquiasystem.models.Gerente;
 import ufjf_dcc025.franquiasystem.models.Usuario;
-import ufjf_dcc025.franquiasystem.models.Vendedor;
 import ufjf_dcc025.franquiasystem.repositories.UsuarioRepository;
 
 public class UsuarioController {
@@ -18,11 +14,11 @@ public class UsuarioController {
         this.usuarioRepository = new UsuarioRepository();
     }
     
-    public Optional<Usuario> autenticar(String nome, String senha) {
+    public Optional<Usuario> autenticar(String email, String senha) {
         List<Usuario> usuarios = usuarioRepository.findAll();
         
         for(Usuario usuario : usuarios) {
-            if(usuario.getNome().equals(nome) && usuario.getSenha().equals(senha)) {
+            if(usuario.getEmail().equals(email) && usuario.getSenha().equals(senha)) {
                 return Optional.of(usuario);
             }
         }
@@ -46,38 +42,6 @@ public class UsuarioController {
     
     public List<Usuario> findAllGerentes() {
         return usuarioRepository.findAll().stream().filter(u -> "gerente".equals(u.getTipo())).collect(Collectors.toList());
-    }
-    
-    public void create(String nome, String senha, String tipo) throws TipoDeUsuarioInvalido {
-        switch (tipo) {
-            case "dono":
-                usuarioRepository.create(new Dono(nome, senha));
-                break;
-            case "gerente":
-                usuarioRepository.create(new Gerente(nome, senha));
-                break;
-            case "vendedor":
-                usuarioRepository.create(new Vendedor(nome, senha));
-                break;
-            default:
-                throw new TipoDeUsuarioInvalido();
-        }
-    }
-    
-    public void update(int id, String nome, String senha, String tipo) throws TipoDeUsuarioInvalido {
-        switch (tipo) {
-            case "dono":
-                usuarioRepository.update(new Dono(id, nome, senha));
-                break;
-            case "gerente":
-                usuarioRepository.update(new Gerente(id, nome, senha));
-                break;
-            case "vendedor":
-                usuarioRepository.update(new Vendedor(id, nome, senha));
-                break;
-            default:
-                throw new TipoDeUsuarioInvalido();
-        }
     }
     
     public void delete(int id) {

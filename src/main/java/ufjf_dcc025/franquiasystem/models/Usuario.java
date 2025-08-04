@@ -4,16 +4,22 @@ public abstract class Usuario {
     protected int id;
     protected String nome;
     protected String senha;
+    protected String cpf;
+    protected String email;
     
-    public Usuario(int id, String nome, String senha) {
+    public Usuario(int id, String nome, String senha, String cpf, String email) {
         this.id = id;
         this.nome = nome;
         this.senha = senha;
+        this.cpf = cpf;
+        this.email = email;
     }
     
-    public Usuario(String nome, String senha) {
+    public Usuario(String nome, String senha, String cpf, String email) {
         this.nome = nome;
         this.senha = senha;
+        this.cpf = cpf;
+        this.email = email;
     }
     
     public int getId() {
@@ -33,6 +39,18 @@ public abstract class Usuario {
     }
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+    public String getCpf() {
+        return cpf;
+    }
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
     
     public abstract String getTipo();

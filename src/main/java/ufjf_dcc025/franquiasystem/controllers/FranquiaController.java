@@ -1,6 +1,8 @@
 package ufjf_dcc025.franquiasystem.controllers;
 
 import java.util.List;
+import java.util.Optional;
+import ufjf_dcc025.franquiasystem.exceptions.ErroCriacaoFranquiaException;
 import ufjf_dcc025.franquiasystem.repositories.FranquiaRepository;
 import ufjf_dcc025.franquiasystem.models.Franquia;
 
@@ -11,8 +13,14 @@ public class FranquiaController {
         franquiaRepository = new FranquiaRepository();
     }
     
-    public void create(Franquia franquia) {
-        franquiaRepository.create(franquia);
+    public Franquia create(Franquia franquia) throws ErroCriacaoFranquiaException {
+        Optional<Franquia> franquiaCriada = franquiaRepository.create(franquia);
+        
+        if(franquiaCriada.isPresent()) {
+            return franquiaCriada.get();
+        }else{
+            throw new ErroCriacaoFranquiaException();
+        }
     }
     
     public List<Franquia> findAll() {

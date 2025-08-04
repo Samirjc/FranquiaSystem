@@ -20,7 +20,7 @@ public class FranquiaRepository {
     private static final String DIRETORIO = "data";
     private static final String CAMINHO_CSV = DIRETORIO + File.separator + "franquias.csv";
 
-    public void create(Franquia franquia) {
+    public Optional<Franquia> create(Franquia franquia) {
         Usuario gerente = null;
 
         if (franquia.getGerente() != null) {
@@ -49,8 +49,10 @@ public class FranquiaRepository {
                     writer.writeNext(cabecalho);
                 }
 
+                int franquiaAtualizadaId = obterProximoId(arquivo);
+                franquia.setId(franquiaAtualizadaId);
                 String[] dados = {
-                    Integer.toString(obterProximoId(arquivo)),
+                    Integer.toString(franquiaAtualizadaId),
                     franquia.getNome(),
                     franquia.getEndereco(),
                     gerente != null ? Integer.toString(gerente.getId()) : ""
@@ -58,10 +60,12 @@ public class FranquiaRepository {
 
                 writer.writeNext(dados);
             }
-
         } catch (IOException e) {
             System.err.println("Erro ao salvar franquia no CSV: " + e.getMessage());
+            return Optional.empty();
         }
+        
+        return Optional.of(franquia);
     }
 
     public Optional<Franquia> findById(int id) {

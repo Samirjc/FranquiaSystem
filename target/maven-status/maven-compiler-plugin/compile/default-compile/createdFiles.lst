@@ -1,5 +1,7 @@
 ufjf_dcc025\franquiasystem\models\Dono.class
 ufjf_dcc025\franquiasystem\views\GerenteView.class
+ufjf_dcc025\franquiasystem\views\PainelFranquias.class
+ufjf_dcc025\franquiasystem\exceptions\ErroCriacaoFranquiaException.class
 ufjf_dcc025\franquiasystem\models\Usuario.class
 ufjf_dcc025\franquiasystem\views\DonoView.class
 ufjf_dcc025\franquiasystem\controllers\UsuarioController.class
@@ -10,6 +12,8 @@ ufjf_dcc025\franquiasystem\controllers\FranquiaController.class
 ufjf_dcc025\franquiasystem\repositories\FranquiaRepository.class
 ufjf_dcc025\franquiasystem\FranquiaSystem.class
 ufjf_dcc025\franquiasystem\exceptions\TipoDeUsuarioInvalido.class
+ufjf_dcc025\franquiasystem\views\PainelFranquias$1.class
+ufjf_dcc025\franquiasystem\views\PainelGerentes.class
 ufjf_dcc025\franquiasystem\views\VendedorView.class
 ufjf_dcc025\franquiasystem\models\Vendedor.class
 ufjf_dcc025\franquiasystem\views\LoginView.class
@@ -18,4 +22,3 @@ ufjf_dcc025\franquiasystem\models\Gerente.class
 ufjf_dcc025\franquiasystem\repositories\ProdutoRepository.class
 ufjf_dcc025\franquiasystem\repositories\PedidosRepository.class
 ufjf_dcc025\franquiasystem\repositories\UsuarioRepository.class
-ufjf_dcc025\franquiasystem\views\DonoView$1.class
