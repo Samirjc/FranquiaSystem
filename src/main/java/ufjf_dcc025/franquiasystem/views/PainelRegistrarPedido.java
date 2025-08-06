@@ -11,7 +11,6 @@ import ufjf_dcc025.franquiasystem.models.Franquia;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,10 @@ public class PainelRegistrarPedido extends JPanel {
     private Map<Produto, Integer> carrinho;
     private JTextField campoNomeCliente;
     private JTextField campoFormaPagamento;
+    private JTextField campoTaxas;
+    private JTextField campoDescontos;
+    private JComboBox<String> comboModalidade;
+
     private PainelMeusPedidos painelMeusPedidos;
 
     public PainelRegistrarPedido(Usuario vendedor, PainelMeusPedidos painelMeusPedidos) {
@@ -55,11 +58,26 @@ public class PainelRegistrarPedido extends JPanel {
         JPanel painelFinalizar = new JPanel(new GridLayout(0, 2, 5, 5));
         campoNomeCliente = new JTextField();
         campoFormaPagamento = new JTextField();
+
+        // --- NOVOS COMPONENTES INICIALIZADOS COM VALORES PADRÃO ---
+        campoTaxas = new JTextField("0.0");
+        campoDescontos = new JTextField("0.0");
+        String[] modalidades = {"Retirada", "Entrega"};
+        comboModalidade = new JComboBox<>(modalidades);
+
+
         JButton btnFinalizarPedido = new JButton("Finalizar Pedido");
+
         painelFinalizar.add(new JLabel("Nome do Cliente:"));
         painelFinalizar.add(campoNomeCliente);
         painelFinalizar.add(new JLabel("Forma de Pagamento:"));
         painelFinalizar.add(campoFormaPagamento);
+        painelFinalizar.add(new JLabel("Taxas:")); // NOVO
+        painelFinalizar.add(campoTaxas); // NOVO
+        painelFinalizar.add(new JLabel("Descontos:")); // NOVO
+        painelFinalizar.add(campoDescontos); // NOVO
+        painelFinalizar.add(new JLabel("Modalidade:")); // NOVO
+        painelFinalizar.add(comboModalidade); // NOVO
         painelFinalizar.add(new JLabel()); // Placeholder
         painelFinalizar.add(btnFinalizarPedido);
 
@@ -78,7 +96,6 @@ public class PainelRegistrarPedido extends JPanel {
 
         if (produtoSelecionado == null) return;
 
-        // Verifica se há estoque
         if (quantidade > produtoSelecionado.getQuantidade()) {
             JOptionPane.showMessageDialog(this, "Estoque insuficiente! Disponível: " + produtoSelecionado.getQuantidade(), "Erro", JOptionPane.ERROR_MESSAGE);
             return;
@@ -103,28 +120,37 @@ public class PainelRegistrarPedido extends JPanel {
         String formaPagamento = campoFormaPagamento.getText();
 
         if (nomeCliente.isEmpty() || formaPagamento.isEmpty() || carrinho.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Preencha todos os campos e adicione produtos ao pedido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Preencha o nome do cliente, forma de pagamento e adicione produtos ao pedido.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Lógica para criar e salvar o pedido
+        double taxas, descontos;
+        try {
+            taxas = Double.parseDouble(campoTaxas.getText().replace(',', '.'));
+            descontos = Double.parseDouble(campoDescontos.getText().replace(',', '.'));
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Os campos 'Taxas' e 'Descontos' devem ser números válidos.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String modalidade = (String) comboModalidade.getSelectedItem();
+
         Vendedor vendedorLogado = (Vendedor) this.vendedor;
-        Franquia franquiaDoVendedor = vendedorLogado.getFranquia(); // 1. Pega a franquia do vendedor
+        Franquia franquiaDoVendedor = vendedorLogado.getFranquia();
+
 
         Pedido novoPedido = new Pedido(
                 nomeCliente,
                 formaPagamento,
-                new HashMap<>(carrinho), // Cria uma cópia do carrinho
-                0.0, // Taxas
-                0.0, // Descontos
-                "Retirada", // Modalidade
+                new HashMap<>(carrinho),
+                taxas,
+                descontos,
+                modalidade,
                 vendedorLogado,
                 franquiaDoVendedor
         );
 
         new PedidoController().create(novoPedido);
 
-        // Lógica para dar baixa no estoque
         ProdutoController produtoController = new ProdutoController();
         for (Map.Entry<Produto, Integer> entry : carrinho.entrySet()) {
             Produto produtoVendido = entry.getKey();
@@ -135,15 +161,17 @@ public class PainelRegistrarPedido extends JPanel {
 
         JOptionPane.showMessageDialog(this, "Pedido finalizado com sucesso!");
 
-        // Limpa a tela para um novo pedido
         carrinho.clear();
         atualizarTabelaCarrinho();
         campoNomeCliente.setText("");
         campoFormaPagamento.setText("");
+        campoTaxas.setText("0.0");
+        campoDescontos.setText("0.0");
+        comboModalidade.setSelectedItem("Retirada");
+
 
         if (painelMeusPedidos != null) {
             painelMeusPedidos.atualizarTabela();
         }
-
     }
 }

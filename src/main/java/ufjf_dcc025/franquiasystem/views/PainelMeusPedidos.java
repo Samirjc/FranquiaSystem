@@ -94,10 +94,43 @@ public class PainelMeusPedidos extends JPanel {
             JOptionPane.showMessageDialog(this, "Selecione um pedido para ver os detalhes.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
         Pedido pedidoSelecionado = meusPedidos.get(linhaSelecionada);
+
+        // Constrói a string de detalhes completa
         StringBuilder detalhes = new StringBuilder();
-        detalhes.append("Detalhes do Pedido #").append(pedidoSelecionado.getId());
-        //Código para montar a string de detalhes
-        JOptionPane.showMessageDialog(this, new JTextArea(detalhes.toString()), "Detalhes do Pedido", JOptionPane.INFORMATION_MESSAGE);
+        detalhes.append("Detalhes do Pedido #").append(pedidoSelecionado.getId()).append("\n\n");
+        detalhes.append("Cliente: ").append(pedidoSelecionado.getNomeCliente()).append("\n");
+
+        if (pedidoSelecionado.getVendedor() != null) {
+            detalhes.append("Vendedor: ").append(pedidoSelecionado.getVendedor().getNome()).append("\n");
+        }
+
+        detalhes.append("Forma de Pagamento: ").append(pedidoSelecionado.getFormaPagamento()).append("\n");
+        detalhes.append("Modalidade: ").append(pedidoSelecionado.getModalidadeEntrega()).append("\n\n");
+
+        detalhes.append("--- Produtos ---\n");
+        if (pedidoSelecionado.getProdutos() != null && !pedidoSelecionado.getProdutos().isEmpty()) {
+            for (Map.Entry<Produto, Integer> entry : pedidoSelecionado.getProdutos().entrySet()) {
+                Produto p = entry.getKey();
+                Integer qtd = entry.getValue();
+                detalhes.append(String.format("- %d x %s (R$ %.2f cada)\n", qtd, p.getNome(), p.getPreco()));
+            }
+        } else {
+            detalhes.append("Nenhum produto associado a este pedido.\n");
+        }
+
+        detalhes.append("\nTaxas: R$ ").append(String.format("%.2f", pedidoSelecionado.getTaxas()));
+        detalhes.append("\nDescontos: R$ ").append(String.format("%.2f", pedidoSelecionado.getDescontos()));
+        detalhes.append("\n\nValor Total: R$ ").append(String.format("%.2f", calcularValorTotal(pedidoSelecionado)));
+
+        // Exibe os detalhes em uma JTextArea para que o texto possa ser grande e rolável
+        JTextArea areaTexto = new JTextArea(detalhes.toString());
+        areaTexto.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(areaTexto);
+        scrollPane.setPreferredSize(new Dimension(400, 300)); // Define um tamanho bom para a janela de detalhes
+
+        JOptionPane.showMessageDialog(this, scrollPane, "Detalhes do Pedido #" + pedidoSelecionado.getId(), JOptionPane.INFORMATION_MESSAGE);
     }
+
 }

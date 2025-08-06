@@ -1,4 +1,4 @@
 "id","Nome","senha","tipo","cpf","email","franquiaId"
 "1","jorege","senha123","dono","589204524","jorge@gmail.com",""
-"2","pedro","senha123","gerente","859489043","pedro@gmail.com",""
+"2","pedro","senha123","gerente","859489043","pedro@gmail.com","1"
 "3","Guilherme","senha123","vendedor","85930834","guilherme@gmail.com","1"
