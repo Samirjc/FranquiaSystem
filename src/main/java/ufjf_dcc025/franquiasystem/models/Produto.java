@@ -45,4 +45,9 @@ public class Produto {
 
     public int getQuantidade() { return quantidade; }
     public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
+
+    @Override
+    public String toString() {
+        return this.nome; // Retorna apenas o nome do produto
+    }
 }

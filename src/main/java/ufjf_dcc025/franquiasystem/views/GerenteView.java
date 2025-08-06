@@ -16,6 +16,14 @@ public class GerenteView extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+
+        JPanel painelTopo = new JPanel(new BorderLayout());
+        JLabel titulo = new JLabel("Franquia System", SwingConstants.CENTER);
+        titulo.setFont(new Font("SansSerif", Font.BOLD, 28));
+        painelTopo.add(titulo, BorderLayout.CENTER);
+        add(painelTopo, BorderLayout.NORTH);
+
+
         // Cria o painel de abas
         JTabbedPane tabbedPane = new JTabbedPane();
 
