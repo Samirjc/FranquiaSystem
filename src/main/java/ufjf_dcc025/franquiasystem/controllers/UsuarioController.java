@@ -47,4 +47,12 @@ public class UsuarioController {
     public void delete(int id) {
         usuarioRepository.delete(id);
     }
+    
+    public void update(Usuario usuario) {
+        usuarioRepository.update(usuario);
+    }
+    
+    public Usuario create(Usuario usuario) {
+        return usuarioRepository.create(usuario);
+    }
 }
