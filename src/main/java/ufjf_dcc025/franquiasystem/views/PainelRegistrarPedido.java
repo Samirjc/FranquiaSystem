@@ -1,0 +1,138 @@
+package ufjf_dcc025.franquiasystem.views;
+
+import ufjf_dcc025.franquiasystem.controllers.PedidoController;
+import ufjf_dcc025.franquiasystem.controllers.ProdutoController;
+import ufjf_dcc025.franquiasystem.models.Pedido;
+import ufjf_dcc025.franquiasystem.models.Produto;
+import ufjf_dcc025.franquiasystem.models.Usuario;
+import ufjf_dcc025.franquiasystem.models.Vendedor;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class PainelRegistrarPedido extends JPanel {
+    private Usuario vendedor;
+    private JComboBox<Produto> comboProdutos;
+    private JSpinner spinnerQuantidade;
+    private JTable tabelaCarrinho;
+    private DefaultTableModel modeloTabelaCarrinho;
+    private List<Produto> produtosDisponiveis;
+    private Map<Produto, Integer> carrinho;
+    private JTextField campoNomeCliente;
+    private JTextField campoFormaPagamento;
+
+    public PainelRegistrarPedido(Usuario vendedor) {
+        this.vendedor = vendedor;
+        this.carrinho = new HashMap<>();
+        setLayout(new BorderLayout(10, 10));
+
+        // --- PAINEL SUPERIOR: SELEÇÃO DE PRODUTOS ---
+        JPanel painelAdicionar = new JPanel(new FlowLayout());
+        produtosDisponiveis = new ProdutoController().findAll();
+        comboProdutos = new JComboBox<>(produtosDisponiveis.toArray(new Produto[0]));
+        spinnerQuantidade = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        JButton btnAdicionar = new JButton("Adicionar ao Pedido");
+        painelAdicionar.add(new JLabel("Produto:"));
+        painelAdicionar.add(comboProdutos);
+        painelAdicionar.add(new JLabel("Qtd:"));
+        painelAdicionar.add(spinnerQuantidade);
+        painelAdicionar.add(btnAdicionar);
+
+        // --- PAINEL CENTRAL: CARRINHO DE COMPRAS ---
+        String[] colunas = {"Produto", "Qtd", "Preço Unit.", "Subtotal"};
+        modeloTabelaCarrinho = new DefaultTableModel(colunas, 0);
+        tabelaCarrinho = new JTable(modeloTabelaCarrinho);
+
+        // --- PAINEL INFERIOR: DADOS DO CLIENTE E FINALIZAÇÃO ---
+        JPanel painelFinalizar = new JPanel(new GridLayout(0, 2, 5, 5));
+        campoNomeCliente = new JTextField();
+        campoFormaPagamento = new JTextField();
+        JButton btnFinalizarPedido = new JButton("Finalizar Pedido");
+        painelFinalizar.add(new JLabel("Nome do Cliente:"));
+        painelFinalizar.add(campoNomeCliente);
+        painelFinalizar.add(new JLabel("Forma de Pagamento:"));
+        painelFinalizar.add(campoFormaPagamento);
+        painelFinalizar.add(new JLabel()); // Placeholder
+        painelFinalizar.add(btnFinalizarPedido);
+
+        add(painelAdicionar, BorderLayout.NORTH);
+        add(new JScrollPane(tabelaCarrinho), BorderLayout.CENTER);
+        add(painelFinalizar, BorderLayout.SOUTH);
+
+        // --- AÇÕES DOS BOTÕES ---
+        btnAdicionar.addActionListener(e -> adicionarProdutoAoCarrinho());
+        btnFinalizarPedido.addActionListener(e -> finalizarPedido());
+    }
+
+    private void adicionarProdutoAoCarrinho() {
+        Produto produtoSelecionado = (Produto) comboProdutos.getSelectedItem();
+        int quantidade = (int) spinnerQuantidade.getValue();
+
+        if (produtoSelecionado == null) return;
+
+        // Verifica se há estoque
+        if (quantidade > produtoSelecionado.getQuantidade()) {
+            JOptionPane.showMessageDialog(this, "Estoque insuficiente! Disponível: " + produtoSelecionado.getQuantidade(), "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        carrinho.put(produtoSelecionado, quantidade);
+        atualizarTabelaCarrinho();
+    }
+
+    private void atualizarTabelaCarrinho() {
+        modeloTabelaCarrinho.setRowCount(0);
+        for (Map.Entry<Produto, Integer> entry : carrinho.entrySet()) {
+            Produto p = entry.getKey();
+            int qtd = entry.getValue();
+            double subtotal = p.getPreco() * qtd;
+            modeloTabelaCarrinho.addRow(new Object[]{p.getNome(), qtd, p.getPreco(), subtotal});
+        }
+    }
+
+    private void finalizarPedido() {
+        String nomeCliente = campoNomeCliente.getText();
+        String formaPagamento = campoFormaPagamento.getText();
+
+        if (nomeCliente.isEmpty() || formaPagamento.isEmpty() || carrinho.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos e adicione produtos ao pedido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Lógica para criar e salvar o pedido
+        Pedido novoPedido = new Pedido(
+                nomeCliente,
+                formaPagamento,
+                new HashMap<>(carrinho), // Cria uma cópia do carrinho
+                0.0, // Taxas
+                0.0, // Descontos
+                "Retirada", // Modalidade
+                (Vendedor) this.vendedor,
+                null // ATENÇÃO: Franquia não está sendo associada
+        );
+
+        new PedidoController().create(novoPedido);
+
+        // Lógica para dar baixa no estoque
+        ProdutoController produtoController = new ProdutoController();
+        for (Map.Entry<Produto, Integer> entry : carrinho.entrySet()) {
+            Produto produtoVendido = entry.getKey();
+            int quantidadeVendida = entry.getValue();
+            produtoVendido.setQuantidade(produtoVendido.getQuantidade() - quantidadeVendida);
+            produtoController.update(produtoVendido);
+        }
+
+        JOptionPane.showMessageDialog(this, "Pedido finalizado com sucesso!");
+
+        // Limpa a tela para um novo pedido
+        carrinho.clear();
+        atualizarTabelaCarrinho();
+        campoNomeCliente.setText("");
+        campoFormaPagamento.setText("");
+    }
+}

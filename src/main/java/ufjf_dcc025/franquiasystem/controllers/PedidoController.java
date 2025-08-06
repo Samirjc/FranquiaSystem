@@ -15,6 +15,9 @@ public class PedidoController {
         //a lógica para filtrar por franquia deve entrar aqui.
         return pedidosRepository.findAll();
     }
-
+    public void create(Pedido pedido) {
+        // A única função dele é repassar o pedido para o repositório
+        pedidosRepository.create(pedido);
+    }
     //Aqui entrariam métodos de update, delete, aprovarPedido, etc.
 }
