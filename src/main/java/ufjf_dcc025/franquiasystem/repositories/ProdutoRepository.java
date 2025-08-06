@@ -28,14 +28,15 @@ public class ProdutoRepository {
 
             try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, true))) {
                 if (escreverCabecalho) {
-                    String[] cabecalho = {"id", "Nome", "preco"};
+                    String[] cabecalho = {"id", "Nome", "preco", "quantidade"};
                     writer.writeNext(cabecalho);
                 }
 
                 String[] dados = {
-                    Integer.toString(obterProximoId(arquivo)),
-                    produto.getNome(),
-                    Double.toString(produto.getPreco()),
+                        Integer.toString(obterProximoId(arquivo)),
+                        produto.getNome(),
+                        Double.toString(produto.getPreco()),
+                        Integer.toString(produto.getQuantidade())
                 };
 
                 writer.writeNext(dados);
@@ -58,14 +59,13 @@ public class ProdutoRepository {
 
             for (int i = 1; i < linhas.size(); i++) {
                 String[] linha = linhas.get(i);
-                if (linha.length >= 3) {
-
+                if (linha.length >= 4) {
                     int idAtual = Integer.parseInt(linha[0]);
                     if (idAtual == id) {
                         String nome = linha[1];
-                        String preco = linha[2];
-
-                        return Optional.of(new Produto(nome, Double.parseDouble(preco)));
+                        double preco = Double.parseDouble(linha[2]);
+                        int quantidade = Integer.parseInt(linha[3]);
+                        return Optional.of(new Produto(idAtual, nome, preco, quantidade));
                     }
                 }
             }
@@ -92,12 +92,14 @@ public class ProdutoRepository {
             for (int i = 1; i < linhas.size(); i++) {
                 String[] linha = linhas.get(i);
 
-                if (linha.length >= 3) {
+                if (linha.length >= 4) {
                     int idAtual = Integer.parseInt(linha[0]);
                     String nome = linha[1];
-                    String preco = linha[2];
+                    double preco = Double.parseDouble(linha[2]);
+                    int quantidade = Integer.parseInt(linha[3]);
 
-                    produtos.add(new Produto(idAtual, nome, Double.parseDouble(preco)));
+
+                    produtos.add(new Produto(idAtual, nome, preco, quantidade));
                 }
             }
         } catch (IOException | CsvException e) {
@@ -121,18 +123,15 @@ public class ProdutoRepository {
             for (int i = 1; i < linhas.size(); i++) {
                 String[] linha = linhas.get(i);
 
-                if (linha.length >= 3) {
-                    int id = Integer.parseInt(linha[0]);
-
-                    if (id == produtoAtualizado.getId()) {
-                        linhas.set(i, new String[]{
+                if (linha.length >= 4 && Integer.parseInt(linha[0]) == produtoAtualizado.getId()) { // Verifique por 4 colunas
+                    linhas.set(i, new String[]{
                             Integer.toString(produtoAtualizado.getId()),
                             produtoAtualizado.getNome(),
-                            Double.toString(produtoAtualizado.getPreco())
-                        });
-                        atualizado = true;
-                        break;
-                    }
+                            Double.toString(produtoAtualizado.getPreco()),
+                            Integer.toString(produtoAtualizado.getQuantidade()) // Adicione a quantidade
+                    });
+                    atualizado = true;
+                    break;
                 }
             }
 

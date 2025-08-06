@@ -30,7 +30,7 @@ public class LoginView extends JFrame {
         campoSenha = new JPasswordField(30);
         JButton botaoLogin = new JButton("Entrar");
 
-        JLabel labelLogin = new JLabel("Login:");
+        JLabel labelLogin = new JLabel("Email:");
         JLabel labelSenha = new JLabel("Senha:");
 
         labelLogin.setFont(new Font("SansSerif", Font.PLAIN, 18));

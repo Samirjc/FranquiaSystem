@@ -1,3 +1,5 @@
 "id","Nome","senha","tipo","cpf","email"
 "1","felipe","senha123","gerente","42837484398","felipe@gmail.com"
 "2","jorge","senha123","dono","12345678901","jorge@gmail.com"
+"3","Guilherme","senha123","vendedor","15652801118","guilherme@gmail.com"
+"4","pablo ","senha123","vendedor","15558201811","pablo@gmail.com"
