@@ -12,17 +12,16 @@ public class GerenteView extends JFrame {
 
         setTitle("Painel do Gerente: " + gerente.getNome());
         setSize(1280, 720);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         // Cria o painel de abas
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // Cria os painéis para cada funcionalidade (começaremos com o de Vendedores)
-        // Por enquanto, os outros serão painéis vazios como placeholders.
-        JPanel painelVendedores = new PainelGerenciarVendedores(this.gerente); // Nosso próximo passo
-        JPanel painelPedidos = new JPanel();
+        // Cria os painéis para cada funcionalidade
+        JPanel painelVendedores = new PainelGerenciarVendedores(this.gerente);
+        JPanel painelPedidos = new PainelControlarPedidos();
         JPanel painelEstoque = new PainelGerenciarEstoque();
         JPanel painelRelatorios = new JPanel();
 
@@ -34,5 +33,15 @@ public class GerenteView extends JFrame {
 
         // Adiciona o painel de abas ao Frame
         add(tabbedPane, BorderLayout.CENTER);
+
+
+        //Envia para tela do login
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                dispose(); // Fecha a VendedorView
+                new LoginView().setVisible(true); // Abre uma nova LoginView
+            }
+        });
     }
 }

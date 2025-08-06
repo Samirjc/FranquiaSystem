@@ -57,9 +57,7 @@ public class PainelGerenciarVendedores extends JPanel {
     }
 
     private void carregarVendedores() {
-        // ATENÇÃO: Limitação da arquitetura atual.
-        // O ideal seria buscar vendedores por ID da franquia. Como não é possível agora,
-        // buscamos todos os usuários e filtramos os que são vendedores.
+
         this.vendedores = usuarioController.findAll().stream()
                 .filter(u -> u.getTipo().equals("vendedor"))
                 .collect(Collectors.toList());
@@ -99,14 +97,12 @@ public class PainelGerenciarVendedores extends JPanel {
             String email = campoEmail.getText();
             String senha = new String(campoSenha.getPassword());
 
-            // TODO: Implementar a validação de dados aqui
+
             if (nome.isEmpty() || cpf.isEmpty() || email.isEmpty() || senha.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // ATENÇÃO: Limitação da arquitetura atual.
-            // Não é possível associar o vendedor a uma franquia específica no momento do cadastro.
             Usuario novoVendedor = new Vendedor(nome, senha, cpf, email);
             usuarioController.create(novoVendedor);
             carregarVendedores(); // Atualiza a tabela

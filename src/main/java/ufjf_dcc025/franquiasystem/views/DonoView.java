@@ -16,7 +16,7 @@ public class DonoView extends JFrame {
 
         setTitle("Franquia System");
         setSize(1280, 720);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -54,6 +54,15 @@ public class DonoView extends JFrame {
         add(painelCentral, BorderLayout.CENTER);
 
         cardLayout.show(painelCentral, "BOAS_VINDAS");
+
+        //Envia para tela do login
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                dispose(); // Fecha a VendedorView
+                new LoginView().setVisible(true); // Abre uma nova LoginView
+            }
+        });
     }
 
     private JPanel criarBoasVindas() {
