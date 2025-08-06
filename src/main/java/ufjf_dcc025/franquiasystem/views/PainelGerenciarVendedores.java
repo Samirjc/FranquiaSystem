@@ -103,7 +103,7 @@ public class PainelGerenciarVendedores extends JPanel {
                 return;
             }
 
-            Usuario novoVendedor = new Vendedor(nome, senha, cpf, email);
+            Usuario novoVendedor = new Vendedor(nome, senha, cpf, email, null);
             usuarioController.create(novoVendedor);
             carregarVendedores(); // Atualiza a tabela
         }
