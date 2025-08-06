@@ -1,2 +1,2 @@
-"id","Nome","Endereco","gerenteId"
-"2","Jorge","BOLETO","0.0","10.0","RETIRADA"
+"id","nomeCliente","formaPagamento","taxas","descontos","modalidadeEntrega","vendedorId","franquiaId"
+"1","pedro","PIX","0.0","10.0","RETIRADA","3","3"

@@ -12,8 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import ufjf_dcc025.franquiasystem.models.Franquia;
 import ufjf_dcc025.franquiasystem.models.Pedido;
 import ufjf_dcc025.franquiasystem.models.Produto;
+import ufjf_dcc025.franquiasystem.models.Usuario;
+import ufjf_dcc025.franquiasystem.models.Vendedor;
 
 public class PedidosRepository {
     private static final String DIRETORIO = "data";
@@ -33,7 +36,7 @@ public class PedidosRepository {
 
             try (CSVWriter writer = new CSVWriter(new FileWriter(arquivo, true))) {
                 if (escreverCabecalho) {
-                    String[] cabecalho = {"id", "Nome", "Endereco", "gerenteId"};
+                    String[] cabecalho = {"id", "nomeCliente", "formaPagamento", "taxas", "descontos", "modalidadeEntrega", "vendedorId", "franquiaId"};
                     writer.writeNext(cabecalho);
                 }
                 String[] dados = {
@@ -42,7 +45,9 @@ public class PedidosRepository {
                     pedido.getFormaPagamento(),
                     Double.toString(pedido.getTaxas()),
                     Double.toString(pedido.getDescontos()),
-                    pedido.getModalidadeEntrega()
+                    pedido.getModalidadeEntrega(),
+                    Integer.toString(pedido.getVendedor().getId()),
+                    Integer.toString(pedido.getFranquia().getId())
                 };
 
                 writer.writeNext(dados);
@@ -74,6 +79,8 @@ public class PedidosRepository {
     
     public Optional<Pedido> findById(int id) {
         ProdutoRepository produtoRepository = new ProdutoRepository();
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        FranquiaRepository franquiaRepository = new FranquiaRepository();
         File arquivo = new File(CAMINHO_CSV);
 
         if (!arquivo.exists()) return Optional.empty();
@@ -89,9 +96,24 @@ public class PedidosRepository {
                     double taxas = Double.parseDouble(linha[3]);
                     double descontos = Double.parseDouble(linha[4]);
                     String modalidadeEntrega = linha[5];
+                    int vendedorId = Integer.parseInt(linha[6]);
+                    int franquiaId = Integer.parseInt(linha[7]);
 
                     Map<Produto, Integer> produtos = buscarProdutosDoPedido(id, produtoRepository);
-                    return Optional.of(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega));
+                    
+                    Optional<Usuario> vendedorOpt = usuarioRepository.findById(vendedorId);
+                    Optional<Franquia> franquiaOpt = franquiaRepository.findById(franquiaId);
+                    Vendedor vendedor = null;
+                    Franquia franquia = null;
+                    
+                    if(vendedorOpt.isPresent()) {
+                        vendedor = (Vendedor)vendedorOpt.get();
+                    }
+                    if(franquiaOpt.isPresent()) {
+                        franquia = franquiaOpt.get();
+                    }
+                    return Optional.of(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega, vendedor, franquia));
+                    
                 }
             }
 
@@ -104,6 +126,8 @@ public class PedidosRepository {
     
     public List<Pedido> findAll() {
         ProdutoRepository produtoRepository = new ProdutoRepository();
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        FranquiaRepository franquiaRepository = new FranquiaRepository();
         List<Pedido> pedidos = new ArrayList<>();
         File arquivo = new File(CAMINHO_CSV);
 
@@ -121,9 +145,23 @@ public class PedidosRepository {
                     double taxas = Double.parseDouble(linha[3]);
                     double descontos = Double.parseDouble(linha[4]);
                     String modalidadeEntrega = linha[5];
+                    int vendedorId = Integer.parseInt(linha[6]);
+                    int franquiaId = Integer.parseInt(linha[7]);
+                    
 
                     Map<Produto, Integer> produtos = buscarProdutosDoPedido(id, produtoRepository);
-                    pedidos.add(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega));
+                    Optional<Usuario> vendedorOpt = usuarioRepository.findById(vendedorId);
+                    Optional<Franquia> franquiaOpt = franquiaRepository.findById(franquiaId);
+                    Vendedor vendedor = null;
+                    Franquia franquia = null;
+                    
+                    if(vendedorOpt.isPresent()) {
+                        vendedor = (Vendedor)vendedorOpt.get();
+                    }
+                    if(franquiaOpt.isPresent()) {
+                        franquia = franquiaOpt.get();
+                    }
+                    pedidos.add(new Pedido(id, nome, formaPagamento, produtos, taxas, descontos, modalidadeEntrega, vendedor, franquia));
                 }
             }
 
@@ -153,7 +191,9 @@ public class PedidosRepository {
                             pedidoAtualizado.getFormaPagamento(),
                             Double.toString(pedidoAtualizado.getTaxas()),
                             Double.toString(pedidoAtualizado.getDescontos()),
-                            pedidoAtualizado.getModalidadeEntrega()
+                            pedidoAtualizado.getModalidadeEntrega(),
+                            linha[6],
+                            linha[7]
                         };
                         writer.writeNext(novaLinha);
                     } else {

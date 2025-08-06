@@ -10,8 +10,10 @@ public class Pedido {
     private double taxas;
     private double descontos;
     private String modalidadeEntrega;
+    private Vendedor vendedor;
+    private Franquia franquia;
 
-    public Pedido(int id, String nomeCliente, String formaPagamento, Map<Produto, Integer> produtos, double taxas, double descontos, String modalidadeEntrega) {
+    public Pedido(int id, String nomeCliente, String formaPagamento, Map<Produto, Integer> produtos, double taxas, double descontos, String modalidadeEntrega, Vendedor vendedor, Franquia franquia) {
         this.id = id;
         this.nomeCliente = nomeCliente;
         this.formaPagamento = formaPagamento;
@@ -19,15 +21,19 @@ public class Pedido {
         this.taxas = taxas;
         this.descontos = descontos;
         this.modalidadeEntrega = modalidadeEntrega;
+        this.vendedor = vendedor;
+        this.franquia = franquia;
     }
 
-    public Pedido(String nomeCliente, String formaPagamento, Map<Produto, Integer> produtos, double taxas, double descontos, String modalidadeEntrega) {
+    public Pedido(String nomeCliente, String formaPagamento, Map<Produto, Integer> produtos, double taxas, double descontos, String modalidadeEntrega, Vendedor vendedor, Franquia franquia) {
         this.nomeCliente = nomeCliente;
         this.formaPagamento = formaPagamento;
         this.produtos = produtos;
         this.taxas = taxas;
         this.descontos = descontos;
         this.modalidadeEntrega = modalidadeEntrega;
+        this.vendedor = vendedor;
+        this.franquia = franquia;
     }
 
     public int getId() {
@@ -84,5 +90,17 @@ public class Pedido {
 
     public void setModalidadeEntrega(String modalidadeEntrega) {
         this.modalidadeEntrega = modalidadeEntrega;
+    }
+    public Vendedor getVendedor() {
+        return vendedor;
+    }
+    public void setVendedor(Vendedor vendedor) {
+        this.vendedor = vendedor;
+    }
+    public Franquia getFranquia() {
+        return franquia;
+    }
+    public void setFranquia(Franquia franquia) {
+        this.franquia = franquia;
     }
 }
