@@ -52,6 +52,11 @@ public class PainelMeusPedidos extends JPanel {
         carregarMeusPedidos();
     }
 
+    public void atualizarTabela() {
+        System.out.println("PainelMeusPedidos: Recebi ordem para atualizar a tabela."); // Log para depuração
+        carregarMeusPedidos();
+    }
+
     private void carregarMeusPedidos() {
         List<Pedido> todosOsPedidos = pedidoController.findAll();
         this.meusPedidos = todosOsPedidos.stream()

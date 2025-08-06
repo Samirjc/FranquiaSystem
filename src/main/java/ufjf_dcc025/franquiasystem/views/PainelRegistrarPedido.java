@@ -6,6 +6,7 @@ import ufjf_dcc025.franquiasystem.models.Pedido;
 import ufjf_dcc025.franquiasystem.models.Produto;
 import ufjf_dcc025.franquiasystem.models.Usuario;
 import ufjf_dcc025.franquiasystem.models.Vendedor;
+import ufjf_dcc025.franquiasystem.models.Franquia;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,9 +26,11 @@ public class PainelRegistrarPedido extends JPanel {
     private Map<Produto, Integer> carrinho;
     private JTextField campoNomeCliente;
     private JTextField campoFormaPagamento;
+    private PainelMeusPedidos painelMeusPedidos;
 
-    public PainelRegistrarPedido(Usuario vendedor) {
+    public PainelRegistrarPedido(Usuario vendedor, PainelMeusPedidos painelMeusPedidos) {
         this.vendedor = vendedor;
+        this.painelMeusPedidos = painelMeusPedidos;
         this.carrinho = new HashMap<>();
         setLayout(new BorderLayout(10, 10));
 
@@ -105,6 +108,9 @@ public class PainelRegistrarPedido extends JPanel {
         }
 
         // Lógica para criar e salvar o pedido
+        Vendedor vendedorLogado = (Vendedor) this.vendedor;
+        Franquia franquiaDoVendedor = vendedorLogado.getFranquia(); // 1. Pega a franquia do vendedor
+
         Pedido novoPedido = new Pedido(
                 nomeCliente,
                 formaPagamento,
@@ -112,8 +118,8 @@ public class PainelRegistrarPedido extends JPanel {
                 0.0, // Taxas
                 0.0, // Descontos
                 "Retirada", // Modalidade
-                (Vendedor) this.vendedor,
-                null // ATENÇÃO: Franquia não está sendo associada
+                vendedorLogado,
+                franquiaDoVendedor
         );
 
         new PedidoController().create(novoPedido);
@@ -134,5 +140,10 @@ public class PainelRegistrarPedido extends JPanel {
         atualizarTabelaCarrinho();
         campoNomeCliente.setText("");
         campoFormaPagamento.setText("");
+
+        if (painelMeusPedidos != null) {
+            painelMeusPedidos.atualizarTabela();
+        }
+
     }
 }

@@ -33,31 +33,45 @@ public class LoginView extends JFrame {
         JLabel labelLogin = new JLabel("Email:");
         JLabel labelSenha = new JLabel("Senha:");
 
+        JLabel labelTitulo = new JLabel("Franquia System", SwingConstants.CENTER);
+        labelTitulo.setFont(new Font("SansSerif", Font.BOLD, 28));
+
         labelLogin.setFont(new Font("SansSerif", Font.PLAIN, 18));
         labelSenha.setFont(new Font("SansSerif", Font.PLAIN, 18));
         campoLogin.setFont(new Font("SansSerif", Font.PLAIN, 16));
         campoSenha.setFont(new Font("SansSerif", Font.PLAIN, 16));
         botaoLogin.setFont(new Font("SansSerif", Font.BOLD, 16));
 
-        // Linha 1 - Login
+        // Linha 0 - Título
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2; // Ocupa as duas colunas
+        gbc.anchor = GridBagConstraints.CENTER; // Centraliza
+        painelForm.add(labelTitulo, gbc);
+
+        // Reseta o gridwidth para os próximos componentes
+        gbc.gridwidth = 1;
+
+        // Linha 1 - Email (agora na linha 1)
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.LINE_START; // Alinha o texto à esquerda
         painelForm.add(labelLogin, gbc);
 
         gbc.gridx = 1;
         painelForm.add(campoLogin, gbc);
 
-        // Linha 2 - Senha
+        // Linha 2 - Senha (agora na linha 2)
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         painelForm.add(labelSenha, gbc);
 
         gbc.gridx = 1;
         painelForm.add(campoSenha, gbc);
 
-        // Linha 3 - Botão
+        // Linha 3 - Botão (agora na linha 3)
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         painelForm.add(botaoLogin, gbc);

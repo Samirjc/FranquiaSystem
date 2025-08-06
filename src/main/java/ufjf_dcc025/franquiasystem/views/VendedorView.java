@@ -36,8 +36,12 @@ public class VendedorView extends JFrame {
 
         // --- Estrutura de Abas ---
         JTabbedPane tabbedPane = new JTabbedPane();
-        JPanel painelMeusPedidos = new PainelMeusPedidos(this.vendedor);
-        JPanel painelRegistrarPedido = new PainelRegistrarPedido(this.vendedor);
+
+        // 1. Cria o painel "Meus Pedidos" primeiro, pois ele precisa ser "avisado"
+        PainelMeusPedidos painelMeusPedidos = new PainelMeusPedidos(this.vendedor);
+
+        // 2. Cria o painel "Registrar Pedido" e passa a referência do outro painel para ele
+        PainelRegistrarPedido painelRegistrarPedido = new PainelRegistrarPedido(this.vendedor, painelMeusPedidos);
 
         tabbedPane.addTab("Registrar Novo Pedido", painelRegistrarPedido);
         tabbedPane.addTab("Meus Pedidos", painelMeusPedidos);
