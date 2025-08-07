@@ -18,7 +18,7 @@ import ufjf_dcc025.franquiasystem.models.Produto;
 import ufjf_dcc025.franquiasystem.models.Usuario;
 import ufjf_dcc025.franquiasystem.models.Vendedor;
 
-public class PedidosRepository {
+public class PedidosRepository extends ArquivoRepository{
     private static final String DIRETORIO = "data";
     private static final String CAMINHO_CSV = DIRETORIO + File.separator + "pedidos.csv";
     private static final String CAMINHO_CSV_RELACIONAMENTO = DIRETORIO + File.separator + "pedidos_produtos.csv";
@@ -279,32 +279,5 @@ public class PedidosRepository {
         }
         
         return produtos;
-    }
-    
-    private int obterProximoId(File arquivo) {
-        int ultimoId = 0;
-        if (!arquivo.exists()) {
-            return 1;
-        }
-
-        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
-            List<String[]> linhas = reader.readAll();
-            for (int i = 1; i < linhas.size(); i++) {
-                String[] linha = linhas.get(i);
-                if (linha.length > 0) {
-                    try {
-                        int idAtual = Integer.parseInt(linha[0]);
-                        if (idAtual > ultimoId) {
-                            ultimoId = idAtual;
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao ler o CSV para obter o próximo ID: " + e.getMessage());
-        }
-
-        return ultimoId + 1;
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class FranquiaRepository {
+public class FranquiaRepository extends ArquivoRepository{
 
     private static final String DIRETORIO = "data";
     private static final String CAMINHO_CSV = DIRETORIO + File.separator + "franquias.csv";
@@ -235,32 +235,5 @@ public class FranquiaRepository {
             System.err.println("Erro ao deletar usuário: " + e.getMessage());
             return false;
         }
-    }
-
-    private int obterProximoId(File arquivo) {
-        int ultimoId = 0;
-        if (!arquivo.exists()) {
-            return 1;
-        }
-
-        try (CSVReader reader = new CSVReader(new FileReader(arquivo))) {
-            List<String[]> linhas = reader.readAll();
-            for (int i = 1; i < linhas.size(); i++) { // pula o cabeçalho
-                String[] linha = linhas.get(i);
-                if (linha.length > 0) {
-                    try {
-                        int idAtual = Integer.parseInt(linha[0]);
-                        if (idAtual > ultimoId) {
-                            ultimoId = idAtual;
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao ler o CSV para obter o próximo ID: " + e.getMessage());
-        }
-
-        return ultimoId + 1;
     }
 }
