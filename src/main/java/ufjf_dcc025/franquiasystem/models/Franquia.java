@@ -61,4 +61,9 @@ public class Franquia {
     public void adicionarVendedor(Vendedor vendedor) {
         this.vendedores.add(vendedor);
     }
+
+    @Override
+    public String toString() {
+        return this.nome;
+    }
 }
