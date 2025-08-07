@@ -59,10 +59,10 @@ public class PainelControlarPedidos extends JPanel {
         }
         Franquia franquiaDoGerente = franquiaOpt.get();
 
-        //Busca todos os pedidos do sistema.
+        // Busca todos os pedidos do sistema.
         List<Pedido> todosOsPedidos = pedidoController.findAll();
 
-        //Filtra a lista para manter apenas os pedidos da franquia correta.
+        // Filtra a lista para manter apenas os pedidos da franquia correta.
         this.pedidos = todosOsPedidos.stream()
                 .filter(p -> p.getFranquia() != null && p.getFranquia().getId() == franquiaDoGerente.getId())
                 .collect(Collectors.toList());
@@ -102,39 +102,26 @@ public class PainelControlarPedidos extends JPanel {
 
         Pedido pedidoSelecionado = pedidos.get(linhaSelecionada);
 
-        StringBuilder detalhes = new StringBuilder();
-        detalhes.append("Detalhes do Pedido #").append(pedidoSelecionado.getId()).append("\n\n");
-        detalhes.append("Cliente: ").append(pedidoSelecionado.getNomeCliente()).append("\n");
+        // Cria o painel de edição preenchido com o pedido selecionado
+        PainelRegistrarPedido painelEditar = new PainelRegistrarPedido(gerente, null, pedidoSelecionado);
 
-        if (pedidoSelecionado.getVendedor() != null) {
-            detalhes.append("Vendedor: ").append(pedidoSelecionado.getVendedor().getNome()).append("\n");
-        }
+        // Envolve o painel em outro com margem
+        JPanel painelComMargem = new JPanel(new BorderLayout());
+        painelComMargem.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // margem de 15px em todos os lados
+        painelComMargem.add(painelEditar, BorderLayout.CENTER);
 
-        detalhes.append("Forma de Pagamento: ").append(pedidoSelecionado.getFormaPagamento()).append("\n");
-        detalhes.append("Modalidade: ").append(pedidoSelecionado.getModalidadeEntrega()).append("\n\n");
+        // Exibe em um JDialog modal
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Editar Pedido", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setContentPane(painelComMargem);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
 
-        detalhes.append("--- Produtos ---\n");
-        if (pedidoSelecionado.getProdutos() != null && !pedidoSelecionado.getProdutos().isEmpty()) {
-            for (Map.Entry<Produto, Integer> entry : pedidoSelecionado.getProdutos().entrySet()) {
-                Produto p = entry.getKey();
-                Integer qtd = entry.getValue();
-                detalhes.append(String.format("- %d x %s (R$ %.2f cada)\n", qtd, p.getNome(), p.getPreco()));
-            }
-        } else {
-            detalhes.append("Nenhum produto associado a este pedido.\n");
-        }
-
-        detalhes.append("\nTaxas: R$ ").append(String.format("%.2f", pedidoSelecionado.getTaxas()));
-        detalhes.append("\nDescontos: R$ ").append(String.format("%.2f", pedidoSelecionado.getDescontos()));
-        detalhes.append("\n\nValor Total: R$ ").append(String.format("%.2f", calcularValorTotal(pedidoSelecionado)));
-
-        JTextArea areaTexto = new JTextArea(detalhes.toString());
-        areaTexto.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(areaTexto);
-        scrollPane.setPreferredSize(new Dimension(400, 300)); // Define um bom tamanho para a janela
-
-        JOptionPane.showMessageDialog(this, scrollPane, "Detalhes do Pedido #" + pedidoSelecionado.getId(), JOptionPane.INFORMATION_MESSAGE);
+        // Atualiza os dados da tabela após edição
+        carregarPedidos();
     }
+
     private Optional<Franquia> getFranquiaDoGerenteLogado() {
         // 1. Pega o ID do gerente logado.
         int gerenteId = this.gerente.getId();

@@ -8,12 +8,16 @@ import ufjf_dcc025.franquiasystem.repositories.PedidosRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import ufjf_dcc025.franquiasystem.repositories.ProdutoRepository;
 
 public class PedidoController {
     private final PedidosRepository pedidosRepository;
+    private final ProdutoRepository produtoRepository;
 
     public PedidoController() {
         this.pedidosRepository = new PedidosRepository();
+        this.produtoRepository = new ProdutoRepository();
     }
 
     public List<Pedido> findAll() {
@@ -23,6 +27,12 @@ public class PedidoController {
     public void create(Pedido pedido) {
         // A única função dele é repassar o pedido para o repositório
         pedidosRepository.create(pedido);
+        
+        for(Map.Entry<Produto, Integer> entry : pedido.getProdutos().entrySet()) {
+            Produto produto = entry.getKey();
+            produto.setQuantidade(produto.getQuantidade()-entry.getValue());
+            produtoRepository.update(produto);
+        }
     }
 
     
@@ -71,8 +81,44 @@ public class PedidoController {
 
         return contagemMap;
     }
-
-
-
     
+    public void update(Pedido pedidoAtualizado) {
+        Optional<Pedido> pedidoAntigoOpt = pedidosRepository.findById(pedidoAtualizado.getId());
+
+        if (pedidoAntigoOpt.isPresent()) {
+            Pedido pedidoAntigo = pedidoAntigoOpt.get();
+
+            // Cria um mapa com os produtos antigos para facilitar a comparação
+            Map<Produto, Integer> produtosAntigos = pedidoAntigo.getProdutos();
+            Map<Produto, Integer> produtosNovos = pedidoAtualizado.getProdutos();
+
+            // Para todos os produtos do pedido antigo
+            for (Map.Entry<Produto, Integer> entry : produtosAntigos.entrySet()) {
+                Produto produto = entry.getKey();
+                Integer qtdAntiga = entry.getValue();
+                Integer qtdNova = produtosNovos.getOrDefault(produto, 0);
+
+                int diferenca = qtdAntiga - qtdNova;
+
+                if (diferenca != 0) {
+                    produto.setQuantidade(produto.getQuantidade() + diferenca);
+                    produtoRepository.update(produto);
+                }
+            }
+
+            // Agora trata os produtos novos que não existiam no pedido antigo
+            for (Map.Entry<Produto, Integer> entry : produtosNovos.entrySet()) {
+                Produto produto = entry.getKey();
+                if (!produtosAntigos.containsKey(produto)) {
+                    produto.setQuantidade(produto.getQuantidade() - entry.getValue());
+                    produtoRepository.update(produto);
+                }
+            }
+
+            // Atualiza o pedido no repositório
+            pedidosRepository.update(pedidoAtualizado);
+        } else {
+            throw new IllegalArgumentException("Pedido não encontrado com ID: " + pedidoAtualizado.getId());
+        }
+    }
 }
