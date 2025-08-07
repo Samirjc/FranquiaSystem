@@ -57,10 +57,11 @@ public class PainelDesempenho extends JPanel {
             ticketMedio = faturamento/numeroPedidos;
             //limitando a tres casas decimais
             double ticketMedioArredondado = Math.round(ticketMedio * 1000.0) / 1000.0;
+            double faturamentoArrendondado = Math.round(faturamento*1000.0)/1000;
 
               modeloTabelaFranquias.addRow(new Object[]{
                 id,
-                faturamento,
+                faturamentoArrendondado,
                 numeroPedidos,
                 ticketMedioArredondado
             });
