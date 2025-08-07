@@ -4,17 +4,14 @@ import ufjf_dcc025.franquiasystem.models.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class DonoView extends JFrame {
     private final Usuario dono;
-    private final CardLayout cardLayout;
-    private final JPanel painelCentral;
 
     public DonoView(Usuario dono) {
         this.dono = dono;
 
-        setTitle("Franquia System");
+        setTitle("Painel do Dono: " + dono.getNome());
         setSize(1280, 720);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -22,85 +19,31 @@ public class DonoView extends JFrame {
 
         // TOPO
         JPanel painelTopo = new JPanel(new BorderLayout());
-
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("Menu");
-
-        JMenuItem itemFranquias = new JMenuItem("Franquias");
-        itemFranquias.addActionListener(this::mostrarFranquias);
-
-        JMenuItem itemGerentes = new JMenuItem("Gerentes");
-        itemGerentes.addActionListener(this::mostrarGerentes);
-        
-        JMenuItem itemRanking = new JMenuItem("Ranking");
-        itemRanking.addActionListener(this::mostrarRanking);
-
-
-        JMenuItem itemDesempenhoFranquias = new JMenuItem("Desempenho");
-        itemDesempenhoFranquias.addActionListener(this::mostrarDesempenho);
-
-        menu.add(itemFranquias);
-        menu.add(itemGerentes);
-        menu.add(itemDesempenhoFranquias);
-
-        menu.add(itemRanking);
-        menuBar.add(menu);
-        painelTopo.add(menuBar, BorderLayout.WEST);
-
         JLabel titulo = new JLabel("Franquia System", SwingConstants.CENTER);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 28));
         painelTopo.add(titulo, BorderLayout.CENTER);
-
         add(painelTopo, BorderLayout.NORTH);
 
-        // PAINEL CENTRAL
-        cardLayout = new CardLayout();
-        painelCentral = new JPanel(cardLayout);
-        
-        painelCentral.add(criarBoasVindas(), "BOAS_VINDAS");
-        painelCentral.add(new PainelFranquias(), "FRANQUIAS");
-        painelCentral.add(new PainelGerentes(), "GERENTES");
-        painelCentral.add(new PainelDesempenho(), "DESEMPENHO");
+        JTabbedPane tabbedPane = new JTabbedPane();
 
+        JPanel painelFranquias = new PainelFranquias();
+        JPanel painelGerentes = new PainelGerentes();
+        JPanel painelDesempenho = new PainelDesempenho();
+        JPanel painelRanking = new PainelRanking();
 
-        painelCentral.add(new PainelRanking(), "RANKING");
+        tabbedPane.addTab("Franquias", painelFranquias);
+        tabbedPane.addTab("Gerentes", painelGerentes);
+        tabbedPane.addTab("Desempenho", painelDesempenho);
+        tabbedPane.addTab("Ranking", painelRanking);
 
-        add(painelCentral, BorderLayout.CENTER);
+        add(tabbedPane, BorderLayout.CENTER);
 
-        cardLayout.show(painelCentral, "BOAS_VINDAS");
-
-        //Envia para tela do login
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                dispose(); // Fecha a VendedorView
-                new LoginView().setVisible(true); // Abre uma nova LoginView
+                dispose();
+                new LoginView().setVisible(true);
             }
         });
-    }
-
-    private JPanel criarBoasVindas() {
-        JPanel painel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Bem-vindo, Administrador " + dono.getNome(), SwingConstants.CENTER);
-        label.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        painel.add(label, BorderLayout.CENTER);
-        return painel;
-    }
-
-    private void mostrarFranquias(ActionEvent e) {
-        cardLayout.show(painelCentral, "FRANQUIAS");
-    }
-
-    private void mostrarGerentes(ActionEvent e) {
-        cardLayout.show(painelCentral, "GERENTES");
-    }
-
-       private void mostrarDesempenho(ActionEvent e) {
-        cardLayout.show(painelCentral, "DESEMPENHO");
-    }
-
-    
-    private void mostrarRanking(ActionEvent e) {
-        cardLayout.show(painelCentral, "RANKING");
     }
 }

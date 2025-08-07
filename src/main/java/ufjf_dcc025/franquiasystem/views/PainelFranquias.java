@@ -4,14 +4,13 @@ import ufjf_dcc025.franquiasystem.controllers.FranquiaController;
 import ufjf_dcc025.franquiasystem.controllers.UsuarioController;
 import ufjf_dcc025.franquiasystem.models.Franquia;
 import ufjf_dcc025.franquiasystem.models.Usuario;
+import ufjf_dcc025.franquiasystem.exceptions.ErroCriacaoFranquiaException;
+import ufjf_dcc025.franquiasystem.dto.VendedorRankingDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import ufjf_dcc025.franquiasystem.exceptions.ErroCriacaoFranquiaException;
 
 public class PainelFranquias extends JPanel {
     private final DefaultTableModel modeloTabelaFranquias;
@@ -44,12 +43,16 @@ public class PainelFranquias extends JPanel {
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton btnEditar = new JButton("Editar");
         JButton btnRemover = new JButton("Remover");
+        JButton btnDetalhes = new JButton("Detalhes");
+
+        painelBotoes.add(btnDetalhes);
         painelBotoes.add(btnEditar);
         painelBotoes.add(btnRemover);
         add(painelBotoes, BorderLayout.SOUTH);
 
         btnEditar.addActionListener(e -> editarFranquia());
         btnRemover.addActionListener(e -> removerFranquia());
+        btnDetalhes.addActionListener(e -> verVendedoresDaFranquia());
 
         preencherTabelaFranquias();
     }
@@ -94,7 +97,7 @@ public class PainelFranquias extends JPanel {
         painel.add(new JLabel("Gerente:"));
         painel.add(comboGerentes);
 
-        int opcao = JOptionPane.showConfirmDialog(this, painel, "Editar Franquia", JOptionPane.OK_CANCEL_OPTION);
+        int opcao = JOptionPane.showConfirmDialog(this, painel, "Editar Franquia", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (opcao == JOptionPane.OK_OPTION) {
             String nome = campoNome.getText().trim();
             String endereco = campoEndereco.getText().trim();
@@ -156,19 +159,58 @@ public class PainelFranquias extends JPanel {
 
             if (!nome.isEmpty() && !endereco.isEmpty() && gerente != null) {
                 Franquia novaFranquia = new Franquia(nome, endereco, gerente);
-                
+
                 try {
                     int novaFranquiaId = new FranquiaController().create(novaFranquia).getId();
                     novaFranquia.setId(novaFranquiaId);
                 } catch (ErroCriacaoFranquiaException ex) {
                     JOptionPane.showMessageDialog(this, "Erro ao criar nova franquia.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
-                
+
                 franquias.add(novaFranquia);
                 preencherTabelaFranquias();
             } else {
                 JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    private void verVendedoresDaFranquia() {
+        int linha = tabelaFranquias.getSelectedRow();
+        if (linha == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione uma franquia para ver os detalhes.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Franquia franquiaSelecionada = franquias.get(linha);
+        List<VendedorRankingDTO> vendedores = new UsuarioController().findAllVendedoresByFranquiaId(franquiaSelecionada.getId(), "quantidade");
+
+        if (vendedores.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nenhum vendedor encontrado para esta franquia.", "Informação", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String[] colunas = {"ID", "Nome", "Email"};
+        Object[][] dados = new Object[vendedores.size()][colunas.length];
+
+        for (int i = 0; i < vendedores.size(); i++) {
+            VendedorRankingDTO v = vendedores.get(i);
+            dados[i][0] = v.getId();
+            dados[i][1] = v.getNome();
+            dados[i][2] = v.getEmail();
+        }
+
+        JTable tabela = new JTable(dados, colunas);
+        tabela.setEnabled(false);
+        JScrollPane scrollPane = new JScrollPane(tabela);
+        scrollPane.setPreferredSize(new Dimension(500, 300));
+
+        JPanel painel = new JPanel(new BorderLayout(10, 10));
+        JLabel titulo = new JLabel("Vendedores", SwingConstants.CENTER);
+        titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 16f));
+        painel.add(titulo, BorderLayout.NORTH);
+        painel.add(scrollPane, BorderLayout.CENTER);
+
+        JOptionPane.showMessageDialog(this, painel, "Vendedores da Franquia: " + franquiaSelecionada.getNome(), JOptionPane.PLAIN_MESSAGE);
     }
 }
