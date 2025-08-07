@@ -31,17 +31,19 @@ public class DonoView extends JFrame {
 
         JMenuItem itemGerentes = new JMenuItem("Gerentes");
         itemGerentes.addActionListener(this::mostrarGerentes);
+        
+        JMenuItem itemRanking = new JMenuItem("Ranking");
+        itemRanking.addActionListener(this::mostrarRanking);
+
 
         JMenuItem itemDesempenhoFranquias = new JMenuItem("Desempenho");
         itemDesempenhoFranquias.addActionListener(this::mostrarDesempenho);
 
-        // JMenuItem itemRankingVendedores = new JMenuItem("Ranking");
-       // itemGerentes.addActionListener(this::mostrarRanking);
-
         menu.add(itemFranquias);
         menu.add(itemGerentes);
         menu.add(itemDesempenhoFranquias);
-       // menu.add(itemRankingVendedores);
+
+        menu.add(itemRanking);
         menuBar.add(menu);
         painelTopo.add(menuBar, BorderLayout.WEST);
 
@@ -54,12 +56,14 @@ public class DonoView extends JFrame {
         // PAINEL CENTRAL
         cardLayout = new CardLayout();
         painelCentral = new JPanel(cardLayout);
-
+        
         painelCentral.add(criarBoasVindas(), "BOAS_VINDAS");
         painelCentral.add(new PainelFranquias(), "FRANQUIAS");
         painelCentral.add(new PainelGerentes(), "GERENTES");
         painelCentral.add(new PainelDesempenho(), "DESEMPENHO");
-       // painelCentral.add(new PainelRanking(), "RANKING");
+
+
+        painelCentral.add(new PainelRanking(), "RANKING");
 
         add(painelCentral, BorderLayout.CENTER);
 
@@ -95,9 +99,8 @@ public class DonoView extends JFrame {
         cardLayout.show(painelCentral, "DESEMPENHO");
     }
 
-
-   //    private void mostrarRanking(ActionEvent e) {
-   //     cardLayout.show(painelCentral, "RANKING");
-   // }
-
+    
+    private void mostrarRanking(ActionEvent e) {
+        cardLayout.show(painelCentral, "RANKING");
+    }
 }
