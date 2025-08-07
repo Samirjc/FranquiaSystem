@@ -77,7 +77,7 @@ public class Franquia {
     public int hashCode() {
         // Franquias com o mesmo ID terão o mesmo hashCode.
         return Objects.hash(id);
-
+    }
         
     @Override
     public String toString() {
