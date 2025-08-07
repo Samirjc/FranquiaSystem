@@ -4,6 +4,10 @@ import ufjf_dcc025.franquiasystem.controllers.UsuarioController;
 import ufjf_dcc025.franquiasystem.models.Usuario;
 import ufjf_dcc025.franquiasystem.models.Vendedor;
 
+import ufjf_dcc025.franquiasystem.controllers.FranquiaController;
+import ufjf_dcc025.franquiasystem.models.Franquia;
+import java.util.Optional;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -57,12 +61,28 @@ public class PainelGerenciarVendedores extends JPanel {
     }
 
     private void carregarVendedores() {
+        // 1. Reutiliza o método que você criou para encontrar a franquia do gerente.
+        Optional<Franquia> franquiaOpt = getFranquiaDoGerenteLogado();
 
-        this.vendedores = usuarioController.findAll().stream()
-                .filter(u -> u.getTipo().equals("vendedor"))
+        // Se não encontrou a franquia, simplesmente limpa a tabela e termina.
+        if (franquiaOpt.isEmpty()) {
+            modeloTabela.setRowCount(0);
+            return;
+        }
+        Franquia franquiaDoGerente = franquiaOpt.get();
+
+        // 2. Busca todos os usuários.
+        List<Usuario> todosOsUsuarios = usuarioController.findAll();
+
+        // 3. Filtra a lista para manter apenas os vendedores da franquia correta.
+        this.vendedores = todosOsUsuarios.stream()
+                .filter(u -> u instanceof Vendedor) // Garante que o usuário é um Vendedor
+                .map(u -> (Vendedor) u) // Converte o tipo para Vendedor
+                // O filtro principal: a franquia do vendedor não pode ser nula e seu ID deve ser igual ao do gerente
+                .filter(v -> v.getFranquia() != null && v.getFranquia().getId() == franquiaDoGerente.getId())
                 .collect(Collectors.toList());
 
-        modeloTabela.setRowCount(0); // Limpa a tabela
+        modeloTabela.setRowCount(0);
         for (Usuario vendedor : vendedores) {
             modeloTabela.addRow(new Object[]{
                     vendedor.getId(),
@@ -103,7 +123,16 @@ public class PainelGerenciarVendedores extends JPanel {
                 return;
             }
 
-            Usuario novoVendedor = new Vendedor(nome, senha, cpf, email, null);
+            // Chama nosso novo método para fazer todo o trabalho de busca e verificação
+            Optional<Franquia> franquiaOpt = getFranquiaDoGerenteLogado();
+            // Se o método não encontrou a franquia, ele já mostrou o erro, então só precisamos parar.
+            if (franquiaOpt.isEmpty()) {
+                return;
+            }
+            // Se encontrou, podemos usar o resultado com segurança.
+            Franquia franquiaDoGerente = franquiaOpt.get();
+            Usuario novoVendedor = new Vendedor(nome, senha, cpf, email, franquiaDoGerente);
+
             usuarioController.create(novoVendedor);
             carregarVendedores(); // Atualiza a tabela
         }
@@ -164,5 +193,21 @@ public class PainelGerenciarVendedores extends JPanel {
             usuarioController.delete(vendedorSelecionado.getId());
             carregarVendedores(); // Atualiza a tabela
         }
+    }
+
+    private Optional<Franquia> getFranquiaDoGerenteLogado() {
+        // 1. Pega o ID do gerente logado.
+        int gerenteId = this.gerente.getId();
+
+        // 2. Usa o novo método do FranquiaController para encontrar a franquia deste gerente.
+        FranquiaController franquiaController = new FranquiaController();
+        Optional<Franquia> franquiaOpt = franquiaController.findFranquiaByGerenteId(gerenteId);
+
+        // 3. Verifica se a franquia foi encontrada.
+        if (franquiaOpt.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Erro: Não foi possível encontrar a franquia para este gerente.", "Erro Crítico", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return franquiaOpt;
     }
 }

@@ -1,6 +1,8 @@
 package ufjf_dcc025.franquiasystem.views;
 
 import ufjf_dcc025.franquiasystem.models.Usuario;
+import ufjf_dcc025.franquiasystem.models.Vendedor;
+import ufjf_dcc025.franquiasystem.models.Gerente;
 import javax.swing.*;
 import java.awt.*;
 
@@ -29,9 +31,9 @@ public class GerenteView extends JFrame {
 
         // Cria os painéis para cada funcionalidade
         JPanel painelVendedores = new PainelGerenciarVendedores(this.gerente);
-        JPanel painelPedidos = new PainelControlarPedidos();
+        JPanel painelPedidos = new PainelControlarPedidos((Gerente)this.gerente);
         JPanel painelEstoque = new PainelGerenciarEstoque();
-        JPanel painelRelatorios = new JPanel();
+        JPanel painelRelatorios = new PainelRelatorios((Gerente) this.gerente);
 
         // Adiciona os painéis como abas
         tabbedPane.addTab("Gerenciar Vendedores", painelVendedores);

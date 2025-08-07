@@ -5,6 +5,8 @@ import java.util.Optional;
 import ufjf_dcc025.franquiasystem.exceptions.ErroCriacaoFranquiaException;
 import ufjf_dcc025.franquiasystem.repositories.FranquiaRepository;
 import ufjf_dcc025.franquiasystem.models.Franquia;
+import ufjf_dcc025.franquiasystem.models.Usuario;
+
 
 public class FranquiaController {
     private final FranquiaRepository franquiaRepository;
@@ -33,5 +35,11 @@ public class FranquiaController {
     
     public void delete(int id) {
         franquiaRepository.delete(id);
+    }
+
+    public Optional<Franquia> findFranquiaByGerenteId(int gerenteId) {
+        return franquiaRepository.findAll().stream()
+                .filter(f -> f.getGerente() != null && f.getGerente().getId() == gerenteId)
+                .findFirst();
     }
 }
