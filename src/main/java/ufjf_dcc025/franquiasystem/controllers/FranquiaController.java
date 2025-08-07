@@ -5,7 +5,7 @@ import java.util.Optional;
 import ufjf_dcc025.franquiasystem.exceptions.ErroCriacaoFranquiaException;
 import ufjf_dcc025.franquiasystem.repositories.FranquiaRepository;
 import ufjf_dcc025.franquiasystem.models.Franquia;
-import ufjf_dcc025.franquiasystem.models.Usuario;
+import java.util.stream.Collectors;
 
 
 public class FranquiaController {
@@ -27,6 +27,13 @@ public class FranquiaController {
     
     public List<Franquia> findAll() {
         return franquiaRepository.findAll();
+    }
+    
+    public List<Franquia> findAllSemGerente() {
+        return franquiaRepository.findAll()
+                .stream()
+                .filter(franquia -> franquia.getGerente() == null)
+                .collect(Collectors.toList());
     }
     
     public void update(Franquia franquiaAtualizada) {

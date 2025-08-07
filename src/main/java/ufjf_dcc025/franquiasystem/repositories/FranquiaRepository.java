@@ -95,6 +95,8 @@ public class FranquiaRepository extends ArquivoRepository{
 
                             if (gerenteOpt.isPresent()) {
                                 return Optional.of(new Franquia(idAtual, nome, endereco, gerenteOpt.get()));
+                            }else{
+                                return Optional.of(new Franquia(idAtual, nome, endereco, null));
                             }
                         } else {
                             return Optional.of(new Franquia(idAtual, nome, endereco, null));
@@ -137,6 +139,8 @@ public class FranquiaRepository extends ArquivoRepository{
 
                         if (gerenteOpt.isPresent()) {
                             franquias.add(new Franquia(idAtual, nome, endereco, gerenteOpt.get()));
+                        }else{
+                            franquias.add(new Franquia(idAtual, nome, endereco, null));
                         }
                     } else {
                         franquias.add(new Franquia(idAtual, nome, endereco, null));

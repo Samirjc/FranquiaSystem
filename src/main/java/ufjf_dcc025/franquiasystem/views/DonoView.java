@@ -1,21 +1,28 @@
 package ufjf_dcc025.franquiasystem.views;
 
+import ufjf_dcc025.franquiasystem.controllers.FranquiaController;
 import ufjf_dcc025.franquiasystem.models.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class DonoView extends JFrame {
     private final Usuario dono;
+    private final FranquiaController franquiaController;
 
     public DonoView(Usuario dono) {
         this.dono = dono;
+        this.franquiaController = new FranquiaController();
 
         setTitle("Painel do Dono: " + dono.getNome());
         setSize(1280, 720);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+
+        // Verifica franquias sem gerente e mostra popup se existir
+        verificarFranquiasSemGerente();
 
         // TOPO
         JPanel painelTopo = new JPanel(new BorderLayout());
@@ -45,5 +52,17 @@ public class DonoView extends JFrame {
                 new LoginView().setVisible(true);
             }
         });
+    }
+
+    private void verificarFranquiasSemGerente() {
+        var franquiasSemGerente = franquiaController.findAllSemGerente();
+        if (franquiasSemGerente != null && !franquiasSemGerente.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Existem franquias sem gerente! Por favor, atribua gerentes às franquias pendentes.",
+                "Atenção",
+                JOptionPane.WARNING_MESSAGE
+            );
+        }
     }
 }
