@@ -2,6 +2,7 @@ package ufjf_dcc025.franquiasystem.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Franquia {
     private int id;
@@ -60,5 +61,21 @@ public class Franquia {
     }
     public void adicionarVendedor(Vendedor vendedor) {
         this.vendedores.add(vendedor);
+    }
+
+
+    //implementando a nossa comparacao
+    @Override
+    public boolean equals(Object  outroObjeto) {
+        if (this ==   outroObjeto) return true;
+        if (   outroObjeto == null || getClass() !=    outroObjeto.getClass()) return false;
+        Franquia franquia = (Franquia) outroObjeto;
+        return id == franquia.id;
+    }
+
+    @Override
+    public int hashCode() {
+        // Franquias com o mesmo ID terão o mesmo hashCode.
+        return Objects.hash(id);
     }
 }
