@@ -121,4 +121,8 @@ public class PedidoController {
             throw new IllegalArgumentException("Pedido não encontrado com ID: " + pedidoAtualizado.getId());
         }
     }
+    
+    public void delete(int pedidoId) {
+        pedidosRepository.delete(pedidoId);
+    }
 }

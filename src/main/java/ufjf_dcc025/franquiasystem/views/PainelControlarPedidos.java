@@ -41,10 +41,14 @@ public class PainelControlarPedidos extends JPanel {
 
         JPanel painelBotoes = new JPanel();
         JButton btnVerDetalhes = new JButton("Ver Detalhes / Editar");
+        JButton btnDeletar = new JButton("Deletar");
+
         painelBotoes.add(btnVerDetalhes);
+        painelBotoes.add(btnDeletar);
         add(painelBotoes, BorderLayout.SOUTH);
 
         btnVerDetalhes.addActionListener(e -> verDetalhesPedido());
+        btnDeletar.addActionListener(e -> deletarPedido());
 
         carregarPedidos();
     }
@@ -53,16 +57,13 @@ public class PainelControlarPedidos extends JPanel {
         Optional<Franquia> franquiaOpt = getFranquiaDoGerenteLogado();
 
         if (franquiaOpt.isEmpty()) {
-            // Se não encontrou a franquia, limpa a tabela e não faz mais nada.
             modeloTabela.setRowCount(0);
             return;
         }
         Franquia franquiaDoGerente = franquiaOpt.get();
 
-        // Busca todos os pedidos do sistema.
         List<Pedido> todosOsPedidos = pedidoController.findAll();
 
-        // Filtra a lista para manter apenas os pedidos da franquia correta.
         this.pedidos = todosOsPedidos.stream()
                 .filter(p -> p.getFranquia() != null && p.getFranquia().getId() == franquiaDoGerente.getId())
                 .collect(Collectors.toList());
@@ -102,15 +103,12 @@ public class PainelControlarPedidos extends JPanel {
 
         Pedido pedidoSelecionado = pedidos.get(linhaSelecionada);
 
-        // Cria o painel de edição preenchido com o pedido selecionado
         PainelRegistrarPedido painelEditar = new PainelRegistrarPedido(gerente, null, pedidoSelecionado);
 
-        // Envolve o painel em outro com margem
         JPanel painelComMargem = new JPanel(new BorderLayout());
-        painelComMargem.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // margem de 15px em todos os lados
+        painelComMargem.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         painelComMargem.add(painelEditar, BorderLayout.CENTER);
 
-        // Exibe em um JDialog modal
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Editar Pedido", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setContentPane(painelComMargem);
@@ -118,19 +116,41 @@ public class PainelControlarPedidos extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
 
-        // Atualiza os dados da tabela após edição
         carregarPedidos();
     }
 
+    private void deletarPedido() {
+        int linhaSelecionada = tabelaPedidos.getSelectedRow();
+        if (linhaSelecionada == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um pedido para deletar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Pedido pedidoSelecionado = pedidos.get(linhaSelecionada);
+
+        int confirmacao = JOptionPane.showConfirmDialog(
+                this,
+                "Tem certeza que deseja deletar o pedido ID " + pedidoSelecionado.getId() + "?",
+                "Confirmar Deleção",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            try {
+                pedidoController.delete(pedidoSelecionado.getId());
+                JOptionPane.showMessageDialog(this, "Pedido deletado com sucesso.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                carregarPedidos();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao deletar o pedido: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     private Optional<Franquia> getFranquiaDoGerenteLogado() {
-        // 1. Pega o ID do gerente logado.
         int gerenteId = this.gerente.getId();
 
-        // 2. Usa o método do FranquiaController para encontrar a franquia.
         FranquiaController franquiaController = new FranquiaController();
         Optional<Franquia> franquiaOpt = franquiaController.findFranquiaByGerenteId(gerenteId);
 
-        // 3. Verifica se a franquia foi encontrada.
         if (franquiaOpt.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Erro: Não foi possível encontrar a franquia para este gerente.", "Erro Crítico", JOptionPane.ERROR_MESSAGE);
         }
